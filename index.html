@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor y Comparador de IA</title>
+
+    <!-- React y ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#0e0e0e',
+                        primary: '#2f4157',
+                        secondary: '#577c8e',
+                        accent: '#f4efeb',
+                        surface: 'rgba(255, 255, 255, 0.05)',
+                        surfaceHover: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #f4efeb;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Utilidades Glassmorphism */
+        .glass {
+            background: rgba(47, 65, 87, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(87, 124, 142, 0.5);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: #0e0e0e;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: #2f4157;
+            border-radius: 3px;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script>
+        window.onerror = function (message, source, lineno, colno, error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '0';
+            errorDiv.style.left = '0';
+            errorDiv.style.width = '100%';
+            errorDiv.style.backgroundColor = '#990000';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.zIndex = '9999';
+            errorDiv.style.fontFamily = 'monospace';
+            errorDiv.innerHTML = '<h3>Error Detectado:</h3><pre>' + message + '\n' + source + ':' + lineno + '</pre>';
+            document.body.appendChild(errorDiv);
+        };
+    </script>
+    <script type="text/babel">
+        if (!window.React || !window.ReactDOM) throw new Error("React falló al cargar.");
+        if (!window.Chart) throw new Error("Chart.js falló al cargar.");
+
+        const { useState, useEffect, useRef } = React;
+
+        Chart.defaults.color = '#9ca3af';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        const Icons = {
+            LayoutDashboard: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>,
+            Newspaper: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" /><path d="M18 14h-8" /><path d="M15 18h-5" /><path d="M10 6h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" /></svg>,
+            BarChart2: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="18" y1="20" y2="10" /><line x1="12" x2="12" y1="20" y2="4" /><line x1="6" x2="6" y1="20" y2="14" /></svg>,
+            Bookmark: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>,
+            Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>,
+            Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>,
+            RefreshCw: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>,
+            ExternalLink: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></svg>,
+            Robot: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="12" x="3" y="6" rx="2" /><path d="M9 10h.01" /><path d="M15 10h.01" /><path d="M12 2v4" /><path d="M12 18v4" /><path d="M5 21a7 7 0 0 1 14 0" /></svg>,
+            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>,
+            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+        };
+
+        const COMPANIES = {
+            'OpenAI': { color: '#10a37f' },
+            'Anthropic': { color: '#d97757' },
+            'Google': { color: '#4285f4' },
+            'Meta': { color: '#0668e1' },
+            'Mistral': { color: '#fcd34d' },
+            'xAI': { color: '#ffffff' },
+            'DeepSeek': { color: '#4e7aff' }
+        };
+
+        const INITIAL_NEWS = [
+            {
+                id: 101,
+                title: "OpenAI y SoftBank anuncian alianza estratégica para IA en salud",
+                summary: "La colaboración busca aplicar modelos de razonamiento avanzado de GPT-5 en diagnósticos médicos.",
+                content: "OpenAI ha正式 anunciado una asociación masiva con SoftBank Group para expandir el alcance de 'GPT-5' en el sector salud. Esta alianza permitirá el desarrollo de herramientas de diagnóstico preventivo impulsadas por IA, utilizando las nuevas capacidades de razonamiento causal del modelo.",
+                source: "OpenAI Blog", date: "2026-01-08", company: "OpenAI", tags: ["Alianza", "Salud", "GPT-5"],
+                model_group: "GPT-5",
+                image: "C:/Users/maxgl/.gemini/antigravity/brain/0dc049df-6f46-4248-b1e3-ab307e687c47/openai_softbank_health_1768181004286.png",
+                url: "https://openai.com/news"
+            },
+            {
+                id: 102,
+                title: "Google integra Gemini 3 en Gmail para una gestión inteligente total",
+                summary: "La bandeja de entrada ahora prioriza y resume correos automáticamente con precisión mejorada.",
+                content: "Google ha completado el despliegue de Gemini 3 en Workspace. La nueva función 'Inbox AI' organiza el correo por prioridad semántica y ofrece resúmenes ejecutivos de hilos largos.",
+                source: "Google Blog", date: "2026-01-09", company: "Google", tags: ["Gmail", "Productividad", "Gemini 3"],
+                model_group: "Gemini 3",
+                image: "https://image.pollinations.ai/prompt/Google%20Gemini%20AI%20star%20icon%20organizing%20colorful%20emails%20in%20Gmail%20dark%20theme?width=800&height=600&nologo=true&seed=102",
+                url: "https://blog.google/"
+            },
+            {
+                id: 103,
+                title: "DeepSeek domina mercados emergentes con modelos de bajo costo",
+                summary: "La IA china alcanza una cuota de mercado del 56% en varios países con sus modelos de código abierto.",
+                content: "Sus modelos de la serie V y Coder ofrecen un rendimiento comparable a GPT-4 a una fracción del costo, atrayendo masivamente a desarrolladores en regiones con restricciones de presupuesto.",
+                source: "Microsoft AI Report", date: "2026-01-10", company: "DeepSeek", tags: ["Global", "Mercado", "DeepSeek V4"],
+                model_group: "DeepSeek V4",
+                image: "https://image.pollinations.ai/prompt/DeepSeek%20AI%20global%20map%20with%20glowing%20nodes%20dark%20tech%20aesthetic?width=800&height=600&nologo=true&seed=103",
+                url: "https://www.deepseek.com/"
+            },
+            {
+                id: 104,
+                title: "Anthropic presenta Claude 4.5 Opus: Superando benchmarks de programación",
+                summary: "El nuevo modelo supera a GPT-5.1 en tareas de agentes autónomos y codificación compleja.",
+                content: "Anthropic ha lanzado Claude 4.5 Opus, posicionándolo como el modelo más seguro y capaz para el desarrollo de software.",
+                source: "Anthropic News", date: "2025-11-20", company: "Anthropic", tags: ["Coding", "Agentes", "Claude 4.5"],
+                model_group: "Claude 4.5",
+                image: "https://image.pollinations.ai/prompt/Claude%20AI%20symbol%20performing%20complex%20programming%20tasks%20dark%20theme?width=800&height=600&nologo=true&seed=104",
+                url: "https://www.anthropic.com/"
+            },
+            {
+                id: 105,
+                title: "Llama 4 Behemoth: Meta inicia fase abierta de pruebas masivas",
+                summary: "Zuckerberg libera el acceso a su modelo de 1 trillón de parámetros para investigadores seleccionados.",
+                content: "Meta ha dado un paso audaz al abrir el acceso a 'Behemoth', la versión más potente de Llama 4.",
+                source: "Meta AI", date: "2026-01-05", company: "Meta", tags: ["Open Source", "Llama 4"],
+                model_group: "Llama 4",
+                image: "https://image.pollinations.ai/prompt/Massive%20glowing%20Llama%20symbol%20Behemoth%20model%20dark%20mode?width=800&height=600&nologo=true&seed=105",
+                url: "https://ai.meta.com/"
+            }
+        ];
+
+        // MMLU (General), HumanEval (Code), TokensSec (Speed), Context (Size), Price (USD/1M input)
+        const MODELS_DATA = [
+            // OpenAI
+            { name: 'GPT-4.5', company: 'OpenAI', mmlu: 92.0, humanEval: 94, tokensSec: 60, context: 128000, price: 10, type: 'Propietario' },
+            { name: 'GPT-4o (Omni)', company: 'OpenAI', mmlu: 90.0, humanEval: 92, tokensSec: 120, context: 128000, price: 5, type: 'Propietario' },
+            { name: 'GPT-5', company: 'OpenAI', mmlu: 98.5, humanEval: 99, tokensSec: 40, context: 2000000, price: 30, type: 'Propietario' },
+
+            // Anthropic
+            { name: 'Claude Sonnet 4.5', company: 'Anthropic', mmlu: 94.0, humanEval: 96, tokensSec: 80, context: 500000, price: 8, type: 'Propietario' },
+            { name: 'Claude Haiku 4.5', company: 'Anthropic', mmlu: 88.0, humanEval: 89, tokensSec: 200, context: 200000, price: 1, type: 'Propietario' },
+
+            // Google
+            { name: 'Gemini 3 Pro', company: 'Google', mmlu: 95.0, humanEval: 95, tokensSec: 70, context: 5000000, price: 12, type: 'Propietario' },
+            { name: 'Gemini 3 Flash', company: 'Google', mmlu: 91.0, humanEval: 90, tokensSec: 250, context: 2000000, price: 2, type: 'Propietario' },
+
+            // Meta
+            { name: 'Llama 4 Behemoth', company: 'Meta', mmlu: 93.0, humanEval: 91, tokensSec: 30, context: 256000, price: 0, type: 'Abierto' },
+            { name: 'Llama 4 Maverick', company: 'Meta', mmlu: 89.0, humanEval: 88, tokensSec: 150, context: 128000, price: 0, type: 'Abierto' },
+
+            // Mistral
+            { name: 'Mistral Large 3', company: 'Mistral', mmlu: 92.5, humanEval: 93, tokensSec: 50, context: 64000, price: 9, type: 'Propietario' },
+            { name: 'Mistral Medium 3.1', company: 'Mistral', mmlu: 88.0, humanEval: 87, tokensSec: 90, context: 32000, price: 4, type: 'Propietario' },
+
+            // xAI
+            { name: 'Grok 4.1 Thinking', company: 'xAI', mmlu: 91.0, humanEval: 85, tokensSec: 40, context: 1000000, price: 8, type: 'Propietario' },
+            { name: 'Grok 4.1 Fast', company: 'xAI', mmlu: 85.0, humanEval: 80, tokensSec: 300, context: 128000, price: 3, type: 'Abierto' },
+
+            // DeepSeek
+            { name: 'DeepSeek V4', company: 'DeepSeek', mmlu: 90.5, humanEval: 95, tokensSec: 65, context: 128000, price: 2, type: 'Abierto' },
+            { name: 'DeepSeek Coder V4', company: 'DeepSeek', mmlu: 88.0, humanEval: 98, tokensSec: 70, context: 128000, price: 2, type: 'Abierto' },
+        ];
+
+        // --- COMPONENTS ---
+
+        const Sidebar = ({ activeTab, setActiveTab }) => (
+            <div className="w-64 h-screen fixed left-0 top-0 glass border-r border-[#577c8e]/20 flex flex-col p-6 z-20">
+                <div className="flex items-center gap-3 mb-10 text-accent">
+                    <img
+                        src="C:/Users/maxgl/.gemini/antigravity/brain/720624b2-c057-43c7-8fc3-a3ac03ae7100/uploaded_image_1767682930682.png"
+                        alt="AI Monitor Logo"
+                        className="w-10 h-10 object-contain brightness-110 rounded-full"
+                    />
+                    <h1 className="font-bold text-xl tracking-tight">AI Monitor</h1>
+                </div>
+                <nav className="flex-1 space-y-2">
+                    {[
+                        { id: 'dashboard', icon: Icons.LayoutDashboard, label: 'Panel' },
+                        { id: 'news', icon: Icons.Newspaper, label: 'Noticias' },
+                        { id: 'compare', icon: Icons.BarChart2, label: 'Comparar' },
+                        { id: 'guide', icon: Icons.BookOpen, label: 'Guía' },
+                        { id: 'favorites', icon: Icons.Bookmark, label: 'Favoritos' },
+                        { id: 'settings', icon: Icons.Settings, label: 'Config' },
+                    ].map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${activeTab === item.id
+                                ? 'bg-primary/40 text-accent border border-white/5 shadow-lg'
+                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                }`}
+                        >
+                            <item.icon />
+                            <span className="font-medium">{item.label}</span>
+                            {activeTab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+        );
+
+        const GuideView = () => {
+            const MODEL_GUIDES = [
+                {
+                    company: 'OpenAI',
+                    models: [
+                        { name: 'GPT-5', bestFor: 'Investigación científica profunda, resolución de problemas físicos/matemáticos complejos, razonamiento autónomo de largo plazo.', nuance: 'Excesivo para tareas simples.' },
+                        { name: 'GPT-4o (Omni)', bestFor: 'Asistente personal interactivo en tiempo real, análisis multimodal de video/audio, tareas del día a día.', nuance: 'El más equilibrado y rápido.' }
+                    ]
+                },
+                {
+                    company: 'Anthropic',
+                    models: [
+                        { name: 'Claude Sonnet 4.5', bestFor: 'Escritura creativa matizada, generación de informes emocionales, programación colaborativa.', nuance: 'El más "humano" en estilo.' },
+                        { name: 'Claude Haiku 4.5', bestFor: 'Resúmenes ultra-rápidos de grandes volúmenes de texto, chatbots de atención al cliente.', nuance: 'Coste extremadamente bajo.' }
+                    ]
+                },
+                {
+                    company: 'Google',
+                    models: [
+                        { name: 'Gemini 3 Pro', bestFor: 'Análisis de contextos masivos (libros enteros, repositorios de código), multimodalidad nativa.', nuance: 'Rey de la ventana de contexto.' },
+                        { name: 'Gemini 3 Flash', bestFor: 'Procesamiento de datos a gran escala barato y rápido.', nuance: 'Mejor relación precio/contexto.' }
+                    ]
+                },
+                {
+                    company: 'Meta',
+                    models: [
+                        { name: 'Llama 4 Behemoth', bestFor: 'Investigación académica open-source, fine-tuning empresarial privado, despliegue on-premise.', nuance: 'Requiere hardware masivo.' },
+                        { name: 'Llama 4 Maverick', bestFor: 'Uso local en workstations potentes, asistentes privados sin conexión a internet.', nuance: 'Excelente para privacidad.' }
+                    ]
+                },
+                {
+                    company: 'xAI',
+                    models: [
+                        { name: 'Grok 4.1 Thinking', bestFor: 'Debate filosófico, búsqueda de "verdad" sin filtros, acceso a datos de X en tiempo real.', nuance: 'Menos censura, más audaz.' },
+                    ]
+                },
+                {
+                    company: 'DeepSeek',
+                    models: [
+                        { name: 'DeepSeek Coder V4', bestFor: 'Desarrollo de software puro, refactorización de código legado, autocompletado.', nuance: 'Especialista absoluto en código.' }
+                    ]
+                }
+            ];
+
+            return (
+                <div className="animate-fade-in pb-20 overflow-y-auto h-full scrollbar-custom">
+                    <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-blue-200 to-white bg-clip-text text-transparent">Guía de Modelos: ¿Cuál elegir?</h2>
+
+                    <div className="grid grid-cols-1 gap-8">
+                        {MODEL_GUIDES.map((group) => (
+                            <div key={group.company} className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:transform-none cursor-default">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[50px] -translate-y-1/2 translate-x-1/2" />
+                                <div style={{ color: COMPANIES[group.company]?.color || '#fff' }} className="text-sm font-bold tracking-widest uppercase mb-4 opacity-80 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COMPANIES[group.company]?.color || '#fff' }} />
+                                    {group.company}
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    {group.models.map((model) => (
+                                        <div key={model.name} className="bg-white/5 rounded-xl p-5 border border-white/5 hover:border-white/10 transition">
+                                            <h3 className="text-lg font-bold text-white mb-2">{model.name}</h3>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <span className="text-xs text-green-400 font-mono uppercase block mb-1">Mejor Para</span>
+                                                    <p className="text-gray-300 text-sm leading-relaxed">{model.bestFor}</p>
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs text-gray-500 font-mono uppercase block mb-1">Matiz</span>
+                                                    <p className="text-gray-500 text-xs italic">{model.nuance}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        };
+
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null };
+            }
+
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+
+            componentDidCatch(error, errorInfo) {
+                console.error("Uncaught error:", error, errorInfo);
+            }
+
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="p-8 m-8 glass-card rounded-xl text-center">
+                            <h2 className="text-2xl font-bold text-red-400 mb-4">¡Ups! Algo salió mal.</h2>
+                            <p className="text-gray-300 mb-4">Se ha producido un error al renderizar este componente.</p>
+                            <div className="bg-black/40 p-4 rounded text-left overflow-auto max-h-64 border border-red-500/20">
+                                <code className="text-red-200 font-mono text-sm">
+                                    {this.state.error && this.state.error.toString()}
+                                </code>
+                            </div>
+                            <button
+                                onClick={() => this.setState({ hasError: false })}
+                                className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+                            >
+                                Intentar de nuevo
+                            </button>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
+        const getNewsImage = (item) => {
+            if (item.image && item.image.startsWith('http')) return item.image;
+            if (item.image && item.image.includes('Users')) return item.image; // Keep previously generated local ones
+
+            // Automatic generation based on content
+            const style = "Minimalist distinctive abstract digital art, dark background, tech futuristic aesthetic, high contrast";
+            const prompt = `${style} representing: ${item.title} (${item.tags.join(', ')})`;
+            return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=600&nologo=true&seed=${item.id}`;
+        };
+
+        const NewsModal = ({ item, onClose, toggleFavorite, isFavorite }) => {
+            if (!item) return null;
+            const displayImage = getNewsImage(item);
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay animate-fade-in" onClick={onClose}>
+                    <div className="glass-card max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-8 relative flex flex-col gap-4 text-gray-200" onClick={e => e.stopPropagation()}>
+                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-white/10 rounded-full text-white z-10 transition">
+                            <Icons.X />
+                        </button>
+
+                        {displayImage && (
+                            <div className="w-full h-64 rounded-xl overflow-hidden mb-2 relative shrink-0">
+                                <img src={displayImage} alt={item.title} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-transparent to-transparent opacity-80" />
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-mono py-1 px-2 rounded bg-white/5 text-gray-300 border border-white/5">
+                                {item.date}
+                            </span>
+                            <span
+                                className="text-xs py-1 px-2 rounded border border-white/10 font-bold"
+                                style={{
+                                    color: COMPANIES[item.company]?.color || '#fff',
+                                    background: `${COMPANIES[item.company]?.color || '#fff'}15`
+                                }}
+                            >
+                                {item.company}
+                            </span>
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-white leading-tight">{item.title}</h2>
+
+                        <div className="flex gap-2 flex-wrap mb-4">
+                            {item.tags.map(tag => (
+                                <span key={tag} className="text-[10px] uppercase tracking-wider text-gray-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+
+                        <div className="space-y-4 text-gray-300 leading-relaxed text-sm md:text-base border-t border-white/5 pt-4">
+                            {/* Simple paragraph splitting */}
+                            {item.content.split('\n\n').map((para, idx) => (
+                                <p key={idx}>{para}</p>
+                            ))}
+                        </div>
+
+                        <div className="mt-6 flex justify-between items-center pt-4 border-t border-white/5">
+                            <span className="text-sm text-gray-500">Fuente: {item.source}</span>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => toggleFavorite(item.id)}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition ${isFavorite ? 'text-yellow-400 border-yellow-400/30' : 'text-gray-400'}`}
+                                >
+                                    <Icons.Bookmark />
+                                    <span>{isFavorite ? 'Guardado' : 'Guardar'}</span>
+                                </button>
+                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-200 rounded-lg border border-blue-500/30 transition">
+                                    <Icons.ExternalLink />
+                                    <span>Ver Original</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const NewsCard = ({ item, isFavorite, toggleFavorite, onClick }) => {
+            const displayImage = getNewsImage(item);
+
+            return (
+                <div onClick={() => onClick(item)} className="glass-card rounded-xl p-0 overflow-hidden relative group animate-fade-in flex flex-col h-full hover:scale-[1.02] transition-all cursor-pointer">
+                    {displayImage && (
+                        <div className="h-40 w-full overflow-hidden relative">
+                            <img src={displayImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a1f2e] opacity-90" />
+
+                            <div className="absolute top-3 left-3 flex gap-2">
+                                <span className="text-[10px] font-mono py-1 px-2 rounded bg-black/60 text-gray-300 backdrop-blur-sm border border-white/10">
+                                    {item.date}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    <div className="p-5 flex flex-col flex-grow">
+                        <div className="flex justify-between items-start mb-3">
+                            {!displayImage && (
+                                <span className="text-xs font-mono py-1 px-2 rounded bg-white/5 text-gray-300 border border-white/5">
+                                    {item.date}
+                                </span>
+                            )}
+                            <div className="flex gap-2">
+                                <span
+                                    className="text-xs py-1 px-2 rounded border border-white/10 font-bold"
+                                    style={{
+                                        color: COMPANIES[item.company]?.color || '#fff',
+                                        background: `${COMPANIES[item.company]?.color || '#fff'}15`
+                                    }}
+                                >
+                                    {item.company}
+                                </span>
+                            </div>
+                        </div>
+
+                        <h3 className="text-lg font-bold text-gray-100 mb-2 group-hover:text-blue-200 transition-colors">
+                            {item.title}
+                        </h3>
+
+                        <p className="text-sm text-gray-400 mb-4 line-clamp-2 flex-grow">
+                            {item.summary}
+                        </p>
+
+                        <div className="flex items-center justify-between mt-auto">
+                            <div className="flex gap-2 flex-wrap">
+                                {item.tags.map(tag => (
+                                    <span key={tag} className="text-[10px] uppercase tracking-wider text-gray-500 bg-black/30 px-2 py-0.5 rounded">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex gap-3" onClick={e => e.stopPropagation()}>
+                                <button
+                                    onClick={() => toggleFavorite(item.id)}
+                                    className={`p-2 rounded-full hover:bg-white/10 transition ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`}
+                                >
+                                    <Icons.Bookmark />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const RadarChartComponent = ({ data }) => {
+            const canvasRef = useRef(null);
+            const chartRef = useRef(null);
+
+            useEffect(() => {
+                if (chartRef.current) chartRef.current.destroy();
+                const ctx = canvasRef.current.getContext('2d');
+
+                const datasets = data.map((model, idx) => {
+                    const colors = ['rgba(136, 132, 216, 0.5)', 'rgba(130, 202, 157, 0.5)', 'rgba(255, 198, 88, 0.5)', 'rgba(255, 115, 0, 0.5)', 'rgba(0, 136, 254, 0.5)'];
+
+                    // Normalization for 0-100 scale on Radar
+                    // Speed: Max ~300. Divide by 3.
+                    // Context: Log scale mapping.
+                    const speedScore = Math.min(100, model.tokensSec / 3);
+                    const contextScore = Math.min(100, Math.max(0, (Math.log10(model.context) - 3) * 20)); // Adjusted multiplier
+
+                    return {
+                        label: model.name,
+                        data: [model.mmlu, model.humanEval, speedScore, contextScore],
+                        backgroundColor: colors[idx % colors.length],
+                        borderColor: colors[idx % colors.length].replace('0.5', '1'),
+                        borderWidth: 2,
+                    };
+                });
+
+                chartRef.current = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['MMLU (Razonamiento)', 'HumanEval (Código)', 'Velocidad (Norm)', 'Contexto (Log)'],
+                        datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 100,
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                pointLabels: { color: '#9ca3af', font: { size: 12 } },
+                                ticks: { display: false }
+                            }
+                        },
+                        plugins: { legend: { labels: { color: '#fff' } } }
+                    }
+                });
+                return () => chartRef.current && chartRef.current.destroy();
+            }, [data]);
+
+            return <canvas ref={canvasRef} />;
+        };
+
+        const DashboardView = ({ news, models, onNewsClick, favorites, toggleFavorite }) => {
+            const topModel = models.reduce((prev, current) => (prev.mmlu > current.mmlu) ? prev : current);
+            const recentNews = news.slice(0, 3);
+
+            return (
+                <div className="space-y-8 animate-fade-in overflow-y-auto h-full pb-20 scrollbar-custom">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 glass-card rounded-2xl p-8 relative overflow-hidden cursor-default hover:transform-none">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                            <div className="relative z-10">
+                                <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Estado de la IA</h2>
+                                <p className="text-gray-400 mb-6 max-w-lg">
+                                    Resumen diario: GPT-4.5 rumores dominan la conversación. La carrera por la eficiencia se intensifica.
+                                </p>
+                                <div className="flex gap-4">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm text-gray-500">Líder MMLU</span>
+                                        <span className="text-2xl font-mono text-green-400">{topModel.mmlu}%</span>
+                                        <span className="text-xs text-gray-600">{topModel.name}</span>
+                                    </div>
+                                    <div className="w-px bg-white/10" />
+                                    <div className="flex flex-col">
+                                        <span className="text-sm text-gray-500">Noticias Hoy</span>
+                                        <span className="text-2xl font-mono text-blue-400">{news.length}</span>
+                                    </div>
+                                    <div className="w-px bg-white/10" />
+                                    <div className="flex flex-col">
+                                        <span className="text-sm text-gray-500">Velocidad</span>
+                                        <span className="text-2xl font-mono text-purple-400">⚡ Ultra</span>
+                                        <span className="text-xs text-gray-600">Respuesta instantánea</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="glass-card rounded-2xl p-6 flex flex-col justify-center items-center text-center relative cursor-default hover:transform-none">
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary/5 rounded-2xl" />
+                            <h3 className="text-lg font-medium text-gray-300 mb-1">Modelo Destacado</h3>
+                            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl shadow-purple-900/40 my-4 flex items-center justify-center text-2xl font-bold">
+                                4o
+                            </div>
+                            <h4 className="text-xl font-bold text-white">{models.find(m => m.name === 'GPT-4o (Omni)')?.name || 'Modelo Destacado'}</h4>
+                            <p className="text-sm text-gray-500 mt-2">Mejor Todoterreno</p>
+                            <div className="mt-4 w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                <div className="bg-green-400 h-full w-[90%]"></div>
+                            </div>
+                            <span className="text-xs text-green-400 mt-1 self-end">90.2 HumanEval</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold">Últimas Noticias</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {recentNews.map(item => (
+                                <NewsCard
+                                    key={item.id}
+                                    item={item}
+                                    onClick={onNewsClick}
+                                    isFavorite={favorites.includes(item.id)}
+                                    toggleFavorite={toggleFavorite}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const NewsView = ({ news, favorites, toggleFavorite, onNewsClick }) => {
+            const [search, setSearch] = useState("");
+            const [filterCompany, setFilterCompany] = useState("All");
+            const [groupByModel, setGroupByModel] = useState(false);
+
+            const filteredNews = news.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(search.toLowerCase()) ||
+                    item.summary.toLowerCase().includes(search.toLowerCase());
+                const matchesCompany = filterCompany === "All" || item.company === filterCompany;
+                return matchesSearch && matchesCompany;
+            });
+
+            // Grouping Logic
+            const groupedNews = React.useMemo(() => {
+                if (!groupByModel) return null;
+                const groups = {};
+                filteredNews.forEach(item => {
+                    const group = item.model_group || 'General';
+                    if (!groups[group]) groups[group] = [];
+                    groups[group].push(item);
+                });
+                return groups;
+            }, [filteredNews, groupByModel]);
+
+            return (
+                <div className="h-full flex flex-col gap-6 animate-fade-in">
+                    <div className="glass p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center">
+                        <div className="relative w-full md:w-96">
+                            <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                            <input
+                                type="text"
+                                placeholder="Buscar (palabras clave, empresas)..."
+                                className="w-full bg-black/20 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary transition"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto scrollbar-hide py-2 md:py-0">
+                            <button
+                                onClick={() => setGroupByModel(!groupByModel)}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold border transition whitespace-nowrap flex items-center gap-2 ${groupByModel ? 'bg-primary border-primary text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                            >
+                                <Icons.LayoutDashboard className="w-4 h-4" />
+                                {groupByModel ? 'Agrupado' : 'Vista Lista'}
+                            </button>
+
+                            <div className="h-6 w-px bg-white/10 my-auto hidden md:block"></div>
+
+                            <div className="flex gap-2">
+                                <button onClick={() => setFilterCompany('All')} className={`px-4 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${filterCompany === 'All' ? 'bg-white text-black border-white' : 'bg-transparent text-gray-400 border-white/10'}`}>Todas</button>
+                                {Object.keys(COMPANIES).map(company => (
+                                    <button key={company} onClick={() => setFilterCompany(company)} className={`px-4 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${filterCompany === company ? 'bg-white/10 text-white border-white/40' : 'bg-transparent text-gray-400 border-white/10'}`}>{company}</button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pb-20 overflow-y-auto scrollbar-custom pr-2 h-full">
+                        {groupByModel ? (
+                            <div className="space-y-8">
+                                {Object.entries(groupedNews).map(([group, items]) => (
+                                    <div key={group} className="animate-fade-in">
+                                        <h3 className="text-xl font-bold mb-4 text-white/80 border-b border-white/10 pb-2 inline-block pr-8">{group}</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                            {items.map(item => (
+                                                <NewsCard
+                                                    key={item.id}
+                                                    item={item}
+                                                    onClick={onNewsClick}
+                                                    isFavorite={favorites.includes(item.id)}
+                                                    toggleFavorite={toggleFavorite}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                {filteredNews.map(item => (
+                                    <NewsCard
+                                        key={item.id}
+                                        item={item}
+                                        onClick={onNewsClick}
+                                        isFavorite={favorites.includes(item.id)}
+                                        toggleFavorite={toggleFavorite}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const FavoritesView = ({ news, favorites, toggleFavorite, onNewsClick }) => {
+            const favNews = news.filter(n => favorites.includes(n.id));
+            return (
+                <div className="animate-fade-in">
+                    <h2 className="text-2xl font-bold mb-6">Mis Favoritos</h2>
+                    {favNews.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {favNews.map(item => (
+                                <NewsCard
+                                    key={item.id}
+                                    item={item}
+                                    onClick={onNewsClick}
+                                    isFavorite={true}
+                                    toggleFavorite={toggleFavorite}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-64 text-gray-500 glass rounded-xl">
+                            <Icons.Bookmark />
+                            <p className="mt-4">No tienes noticias guardadas aún.</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+
+
+        const BarChartComponent = ({ data, metric, label }) => {
+            const canvasRef = useRef(null);
+            const chartRef = useRef(null);
+
+            useEffect(() => {
+                const ctx = canvasRef.current;
+                if (!ctx) return;
+
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+
+                // Default color if company not found
+                const getColor = (company) => (COMPANIES[company] ? COMPANIES[company].color : '#cccccc');
+                const bgColors = data.map(m => getColor(m.company));
+
+                try {
+                    chartRef.current = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(m => m.name),
+                            datasets: [{
+                                label: label,
+                                data: data.map(m => m[metric]),
+                                backgroundColor: bgColors.map(c => c + '80'),
+                                borderColor: bgColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { color: '#9ca3af' }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#9ca3af' }
+                                }
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error("Error creating chart:", e);
+                }
+
+                return () => {
+                    if (chartRef.current) chartRef.current.destroy();
+                };
+            }, [data, metric, label]);
+
+            return <canvas ref={canvasRef} />;
+        };
+
+        const ComparisonView = ({ models }) => {
+            const [selectedModels, setSelectedModels] = useState([]);
+            const [expandedCompany, setExpandedCompany] = useState(null);
+            const [barMetric, setBarMetric] = useState('mmlu');
+
+            // Initialize with top 3 models if empty
+            useEffect(() => {
+                if (selectedModels.length === 0 && models.length > 0) {
+                    // Safe initial selection
+                    const initial = models.slice(0, 3).map(m => m.name);
+                    setSelectedModels(initial);
+                }
+            }, [models]); // Dependency on models only
+
+            const toggleModel = (name) => {
+                if (selectedModels.includes(name)) {
+                    if (selectedModels.length > 1) {
+                        setSelectedModels(prev => prev.filter(m => m !== name));
+                    }
+                } else {
+                    if (selectedModels.length < 5) {
+                        setSelectedModels(prev => [...prev, name]);
+                    } else {
+                        alert("Máximo 5 modelos para comparar simultáneamente.");
+                    }
+                }
+            };
+
+            // Filter data for charts
+            const data = models.filter(m => selectedModels.includes(m.name));
+
+            const METRICS = {
+                mmlu: 'Razonamiento (MMLU)',
+                humanEval: 'Programación (HumanEval)',
+                tokensSec: 'Velocidad (Tok/s)',
+                price: 'Precio ($/1M)'
+            };
+
+            const METRIC_DESCRIPTIONS = {
+                mmlu: 'Evalúa conocimientos generales y razonamiento lógico en 57 materias académicas.',
+                humanEval: 'Mide la capacidad del modelo para generar código funcional y resolver problemas lógicos.',
+                tokensSec: 'Velocidad de generación de texto. Valores más altos indican respuestas más rápidas.',
+                price: 'Costo promedio combinado de entrada y salida por cada millón de tokens consumidos.'
+            };
+
+            return (
+                <div className="flex flex-col gap-6 h-full overflow-y-auto scrollbar-custom pb-20 animate-fade-in">
+                    {/* Selector Panel */}
+                    <div className="glass p-6 rounded-xl flex flex-col gap-6">
+                        {/* 1. Company Buttons */}
+                        <div>
+                            <h4 className="text-sm font-medium text-gray-400 mb-3 block">1. Selecciona Compañía</h4>
+                            <div className="flex flex-wrap gap-3">
+                                {Object.keys(COMPANIES).map(company => (
+                                    <button
+                                        key={company}
+                                        onClick={() => setExpandedCompany(expandedCompany === company ? null : company)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all flex items-center gap-2 ${expandedCompany === company
+                                            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'
+                                            }`}
+                                    >
+                                        <div className="w-2 h-2 rounded-full" style={{ background: COMPANIES[company].color }} />
+                                        {company}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 2. Expanded Models for Company */}
+                        <div className={`overflow-hidden transition-all duration-300 ${expandedCompany ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <h5 className="text-xs text-gray-500 mb-3 uppercase tracking-wider">Modelos de {expandedCompany}</h5>
+                                <div className="flex flex-wrap gap-2">
+                                    {models.filter(m => m.company === expandedCompany).map(m => (
+                                        <button
+                                            key={m.name}
+                                            onClick={() => toggleModel(m.name)}
+                                            className={`px-3 py-1.5 rounded text-xs font-medium border transition ${selectedModels.includes(m.name)
+                                                ? 'bg-primary border-primary text-white shadow-lg'
+                                                : 'bg-transparent border-white/20 text-gray-400 hover:border-white/40'
+                                                }`}
+                                        >
+                                            {m.name} {selectedModels.includes(m.name) && '✓'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Chart Controls */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex-1">
+                            <p className="text-xs text-gray-400 font-medium italic animate-fade-in key={barMetric}">
+                                <span className="text-blue-400/80 mr-2">ℹ</span>
+                                {METRIC_DESCRIPTIONS[barMetric]}
+                            </p>
+                        </div>
+                        <div className="glass px-4 py-2 rounded-lg flex items-center gap-3 shrink-0">
+                            <span className="text-xs text-gray-400">Métrica de Barras:</span>
+                            <select
+                                value={barMetric}
+                                onChange={(e) => setBarMetric(e.target.value)}
+                                className="bg-transparent text-sm text-white font-medium focus:outline-none cursor-pointer"
+                            >
+                                {Object.entries(METRICS).map(([key, lbl]) => (
+                                    <option key={key} value={key} className="bg-[#1a1a1a]">{lbl}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Radar Chart */}
+                        <div className="glass-card p-4 rounded-xl min-h-[400px] flex flex-col hover:transform-none cursor-default">
+                            <h3 className="text-lg font-bold mb-4 ml-2">Radar General</h3>
+                            <div className="flex-1 w-full h-full min-h-[300px]">
+                                <RadarChartComponent data={data} />
+                            </div>
+                        </div>
+
+                        {/* Bar Chart (Dynamic) */}
+                        <div className="glass-card p-6 rounded-xl flex flex-col hover:transform-none cursor-default min-h-[400px]">
+                            <h3 className="text-lg font-bold mb-4">Comparativa: {METRICS[barMetric]}</h3>
+                            <div className="flex-1 w-full h-full relative">
+                                <BarChartComponent data={data} metric={barMetric} label={METRICS[barMetric]} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Technical Table */}
+                    <div className="glass-card p-6 rounded-xl hover:transform-none cursor-default">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold">Ficha Técnica Detallada</h3>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-gray-400 text-sm">
+                                <thead className="text-xs text-gray-200 uppercase bg-white/5">
+                                    <tr>
+                                        <th className="px-4 py-3 rounded-l-lg">Modelo</th>
+                                        <th className="px-4 py-3">Organización</th>
+                                        <th className="px-4 py-3">MMLU</th>
+                                        <th className="px-4 py-3">Contexto</th>
+                                        <th className="px-4 py-3">Precio</th>
+                                        <th className="px-4 py-3 rounded-r-lg">Licencia</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm">
+                                    {data.map((m) => (
+                                        <tr key={m.name} className="border-b border-white/5 hover:bg-white/5 transition">
+                                            <td className="px-4 py-3 font-medium text-white">{m.name}</td>
+                                            <td className="px-4 py-3">
+                                                <span style={{ color: COMPANIES[m.company] ? COMPANIES[m.company].color : '#fff' }} className="font-bold">
+                                                    {m.company}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 font-mono text-green-400">{m.mmlu}</td>
+                                            <td className="px-4 py-3 font-mono">{parseInt(m.context).toLocaleString()}</td>
+                                            <td className="px-4 py-3">${m.price}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={`px-2 py-1 rounded text-xs ${m.type === 'Abierto' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                                    {m.type}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ADDITIONAL_NEWS = []; // Removed non-core news
+
+        // --- STRICT FILTERING CONFIG ---
+        const BLOCKED_DOMAINS = [
+            'wsj.com', 'ft.com', 'nytimes.com', 'bloomberg.com', 'wired.com',
+            'economist.com', 'hbr.org', 'medium.com'
+        ];
+
+        const EXCLUDED_TERMS = [
+            'fútbol', 'soccer', 'partido', 'deporte', 'liga', 'gol', // Sports
+            'stock', 'market', 'acciones', 'bolsa', 'inversión', 'crypto', // Finance noise
+            'suscríbase', 'suscripción', 'regístrate', 'paywall', 'premium', // Paywalls
+            'curso', 'masterclass', 'bootcamp' // Ads
+        ];
+
+        // Must match exactly one of these to be relevant
+        const REQUIRED_MODEL_KEYWORDS = [
+            'gpt', 'claude', 'gemini', 'llama', 'mistral', 'grok', 'deepseek'
+        ];
+
+        const inferCompany = (text) => {
+            const lower = text.toLowerCase();
+
+            // 1. Check for Excluded Terms (Auto-Block)
+            if (EXCLUDED_TERMS.some(term => lower.includes(term))) return null;
+
+            // 2. Check for Required Model Context (The "Bouncer")
+            // A generic company mention is NOT enough.
+            if (!REQUIRED_MODEL_KEYWORDS.some(kw => lower.includes(kw))) return null;
+
+            // 3. Map to Company
+            if (lower.includes('openai') || lower.includes('gpt')) return 'OpenAI';
+            if (lower.includes('anthropic') || lower.includes('claude')) return 'Anthropic';
+            if (lower.includes('google') || lower.includes('gemini') || lower.includes('deepmind')) return 'Google';
+            if (lower.includes('meta') || lower.includes('llama')) return 'Meta';
+            if (lower.includes('mistral')) return 'Mistral';
+            if (lower.includes('xai') || lower.includes('grok')) return 'xAI';
+            if (lower.includes('deepseek')) return 'DeepSeek';
+
+            return null;
+        };
+
+        const fetchNewsFromRSS = async () => {
+            // Updated query to be even more specific to models
+            const RSS_URL = "https://news.google.com/rss/search?q=(GPT-5+OR+Claude+4.5+OR+Gemini+3+OR+Llama+4+OR+Mistral+Large+OR+Grok+3+OR+DeepSeek+V3)+when:7d&hl=es-419&gl=MX&ceid=MX:es-419";
+            const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                if (data.status !== 'ok') throw new Error("Error fetching RSS");
+
+                return data.items
+                    .map((item, index) => {
+                        const fullText = item.title + " " + item.description;
+                        const company = inferCompany(fullText);
+
+                        // Strict Filters
+                        if (!company) return null;
+
+                        // Domain Filter
+                        if (BLOCKED_DOMAINS.some(domain => item.link.includes(domain))) return null;
+
+                        const tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = item.description;
+                        const cleanSummary = tempDiv.textContent || tempDiv.innerText || "";
+
+                        // Pollinations Fallback for dynamic news
+                        const fallbackImage = `https://image.pollinations.ai/prompt/Abstract%20tech%20visualization%20of%20${company}%20AI%20model%20${item.title.substring(0, 20)}%20dark%20mode?width=800&height=600&nologo=true&seed=${item.guid || index}`;
+
+                        return {
+                            id: Date.now() + index,
+                            title: item.title,
+                            summary: cleanSummary.substring(0, 150) + "...",
+                            content: cleanSummary + "\n\n(Noticia obtenida de Google News)",
+                            source: item.author || "Google News",
+                            date: new Date(item.pubDate).toISOString().split('T')[0],
+                            company: company,
+                            tags: ["Noticias", company],
+                            model_group: company,
+                            image: item.enclosure?.link || fallbackImage,
+                            url: item.link
+                        };
+                    })
+                    .filter(item => item !== null);
+
+            } catch (error) {
+                console.error("Failed to fetch news:", error);
+                return [];
+            }
+        };
+
+        // --- APP ---
+
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+
+            // State initialization with Aggressive Purge
+            const [news, setNews] = useState(() => {
+                const savedNews = localStorage.getItem('ai_tracker_news');
+                const data = savedNews ? JSON.parse(savedNews) : INITIAL_NEWS;
+
+                // Aggressively filter out anything that doesn't pass the new bouncer
+                return data.filter(n => {
+                    const passesBouncer = inferCompany(n.title + " " + (n.summary || ""));
+                    return passesBouncer !== null && COMPANIES[n.company];
+                });
+            });
+
+            const [favorites, setFavorites] = useState(() => {
+                const saved = localStorage.getItem('ai_tracker_favs');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [selectedNews, setSelectedNews] = useState(null);
+            const [lastUpdate, setLastUpdate] = useState(() => {
+                return localStorage.getItem('ai_tracker_last_update') || "Nunca";
+            });
+
+            const [isLoading, setIsLoading] = useState(false);
+
+            // Enforce filtering whenever news changes
+            useEffect(() => {
+                const filtered = news.filter(n => {
+                    const passesBouncer = inferCompany(n.title + " " + (n.summary || ""));
+                    return passesBouncer !== null && COMPANIES[n.company];
+                });
+
+                if (filtered.length !== news.length) {
+                    setNews(filtered);
+                }
+                localStorage.setItem('ai_tracker_news', JSON.stringify(filtered));
+            }, [news]);
+
+            useEffect(() => {
+                localStorage.setItem('ai_tracker_favs', JSON.stringify(favorites));
+            }, [favorites]);
+
+            // Check for updates (24h rule)
+            useEffect(() => {
+                const checkAndFetchNews = async () => {
+                    const lastFetchTime = localStorage.getItem('ai_tracker_fetch_timestamp');
+                    const now = Date.now();
+                    const hoursSinceLastFetch = lastFetchTime ? (now - parseInt(lastFetchTime)) / (1000 * 60 * 60) : 999;
+
+                    console.log(`Hours since last update: ${hoursSinceLastFetch.toFixed(1)}`);
+
+                    if (hoursSinceLastFetch > 24 || news.length <= INITIAL_NEWS.length) { // Update if > 24h OR if we only have initial news (first run/reset)
+                        setIsLoading(true);
+                        const freshNews = await fetchNewsFromRSS();
+
+                        if (freshNews.length > 0) {
+                            setNews(prevNews => {
+                                // Merge logic: Add new ones at the top, avoid exact duplicate titles
+                                const existingTitles = new Set(prevNews.map(n => n.title));
+                                const uniqueNewNews = freshNews.filter(n => !existingTitles.has(n.title));
+                                const updated = [...uniqueNewNews, ...prevNews].slice(0, 50); // Keep max 50 items
+                                return updated;
+                            });
+
+                            const nowStr = new Date().toLocaleTimeString();
+                            setLastUpdate(nowStr);
+                            localStorage.setItem('ai_tracker_last_update', nowStr);
+                            localStorage.setItem('ai_tracker_fetch_timestamp', now.toString());
+                        }
+                        setIsLoading(false);
+                    }
+                };
+
+                checkAndFetchNews();
+
+                // Set up interval to check every hour if 24h has passed
+                const interval = setInterval(checkAndFetchNews, 3600000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const toggleFavorite = (id) => setFavorites(prev => prev.includes(id) ? prev.filter(fid => fid !== id) : [...prev, id]);
+
+            const renderContent = () => {
+                let content;
+                switch (activeTab) {
+                    case 'dashboard': content = <DashboardView news={news} models={MODELS_DATA} onNewsClick={setSelectedNews} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
+                    case 'news': content = <NewsView news={news} favorites={favorites} toggleFavorite={toggleFavorite} onNewsClick={setSelectedNews} />; break;
+                    case 'compare': content = <ComparisonView models={MODELS_DATA} />; break;
+                    case 'guide': content = <GuideView />; break;
+                    case 'favorites': content = <FavoritesView news={news} favorites={favorites} toggleFavorite={toggleFavorite} onNewsClick={setSelectedNews} />; break;
+                    default: content = null;
+                }
+                return (
+                    <ErrorBoundary key={activeTab}>
+                        {content}
+                    </ErrorBoundary>
+                );
+            };
+
+            return (
+                <div className="flex h-screen w-full bg-[#0e0e0e] text-slate-200 selection:bg-secondary/30">
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+                    <main className="flex-1 ml-64 p-8 h-screen overflow-hidden flex flex-col relative">
+                        <header className="flex justify-between items-center mb-8 shrink-0">
+                            <div>
+                                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500 capitalize">{activeTab === 'compare' ? 'Comparar Modelos' : activeTab === 'news' ? 'Feed de Noticias' : activeTab === 'favorites' ? 'Favoritos' : activeTab === 'guide' ? 'Guía de Modelos' : 'Panel Principal'}</h2>
+                                <p className="text-xs text-gray-500 font-mono mt-1">Sincronización: Auto (24h) • {isLoading ? <span className="text-blue-400 animate-pulse">Actualizando...</span> : `Última: ${lastUpdate}`}</p>
+                            </div>
+                            {/* Refresh button removed as requested */}
+                        </header>
+
+                        <div className="flex-1 overflow-hidden relative">
+                            {renderContent()}
+                        </div>
+
+                        {/* Modal Render */}
+                        {selectedNews && (
+                            <NewsModal
+                                item={selectedNews}
+                                onClose={() => setSelectedNews(null)}
+                                isFavorite={favorites.includes(selectedNews.id)}
+                                toggleFavorite={toggleFavorite}
+                            />
+                        )}
+
+                        <div className="fixed top-[-20%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none z-[-1]" />
+                        <div className="fixed bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none z-[-1]" />
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+
+    </script>
+</body>
+
+</html>
