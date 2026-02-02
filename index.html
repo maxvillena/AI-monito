@@ -2,1221 +2,617 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Xoltech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Monitor</title>
 
-  <!-- Tipografías modernas -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+  <!-- React y ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0e0e0e',
+            primary: '#2f4157',
+            secondary: '#577c8e',
+            accent: '#f4efeb',
+            surface: 'rgba(255, 255, 255, 0.05)',
+            surfaceHover: 'rgba(255, 255, 255, 0.1)',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
 
   <style>
-    :root {
-      --color-primario: #8C6849;
-      --color-secundario: #C4B6A6;
-      --color-fondo: #F2EFEA;
-      --color-fondo-suave: #EDE7DF;
-      --color-texto: #3A2E25;
-      --color-acento: #B38867;
-      --radius-card: 18px;
-      --shadow-suave: 0 18px 40px rgba(0, 0, 0, 0.06);
-      --max-width: 1120px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top, #f5eee6 0, #f7f3ee 35%, #f2efe9 80%);
-      color: var(--color-texto);
-      line-height: 1.6;
-    }
-
-    /* Layout general */
-    .container {
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0 1.5rem 4rem;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      backdrop-filter: blur(14px);
-      background: linear-gradient(to bottom, rgba(242, 239, 234, 0.98), rgba(242, 239, 234, 0.85));
-      border-bottom: 1px solid rgba(140, 104, 73, 0.08);
-    }
-
-    .nav {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0.85rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      color: var(--color-primario);
-    }
-
-    .brand-mark {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(140, 104, 73, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      background: radial-gradient(circle at 30% 0, #f2efe9 0, #d3c3b3 60%, #8c6849 100%);
-      box-shadow: 0 10px 20px rgba(140, 104, 73, 0.35);
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 1rem;
-      font-size: 0.85rem;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--color-texto);
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      transition: all 0.25s ease-out;
-      white-space: nowrap;
-    }
-
-    nav a:hover {
-      border-color: rgba(140, 104, 73, 0.35);
-      background: rgba(237, 231, 223, 0.95);
-    }
-
-    nav a.active {
-      border-color: rgba(140, 104, 73, 0.9);
-      background: #8c6849;
-      color: #f7f2ec;
-    }
-
-    /* Hero */
-    .hero {
-      padding: 3rem 1.5rem 2.5rem;
-    }
-
-    .hero-inner {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(280px, 1.5fr);
-      gap: 2.5rem;
-      align-items: center;
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid rgba(140, 104, 73, 0.25);
-      background: rgba(242, 239, 234, 0.9);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-primario);
-      margin-bottom: 0.75rem;
-    }
-
-    .hero-title {
-      font-family: "Cormorant Garamond", "Times New Roman", serif;
-      font-size: clamp(2.4rem, 3.4vw + 1.2rem, 3.6rem);
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-      color: #3b2a1c;
-    }
-
-    .hero-subtitle {
-      font-size: 0.98rem;
-      max-width: 32rem;
-      color: rgba(58, 46, 37, 0.9);
-      margin-bottom: 1.35rem;
-    }
-
-    .hero-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      font-size: 0.8rem;
-    }
-
-    .meta-pill {
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      background: rgba(196, 182, 166, 0.2);
-      border: 1px solid rgba(196, 182, 166, 0.6);
-    }
-
-    .hero-card {
-      border-radius: 26px;
-      padding: 1.3rem 1.4rem;
-      background: radial-gradient(circle at 20% 0, #f9f4ee 0, #e1d4c6 50%, #b08863 100%);
-      box-shadow: var(--shadow-suave);
-      position: relative;
+      background-color: #0e0e0e;
+      color: #f4efeb;
+      font-family: 'Inter', sans-serif;
       overflow: hidden;
     }
-
-    .hero-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(120deg, rgba(255,255,255,0.35) 0, transparent 40%, transparent 60%, rgba(255,255,255,0.35) 100%),
-        radial-gradient(circle at 20% -10%, rgba(255,255,255,0.5), transparent 60%);
-      opacity: 0.75;
-      pointer-events: none;
-      mix-blend-mode: screen;
+    .glass {
+      background: rgba(47, 65, 87, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
-    .hero-pyramid {
-      position: relative;
-      border-radius: 20px;
-      padding: 1rem;
-      background: rgba(242, 239, 234, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.6);
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
     }
-
-    .hero-image {
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(140, 104, 73, 0.35);
-      margin-bottom: 0.75rem;
+    .glass-card:hover {
+      border-color: rgba(87, 124, 142, 0.5);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+      transform: translateY(-2px);
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-custom::-webkit-scrollbar { width: 6px; }
+    .scrollbar-custom::-webkit-scrollbar-track { background: #0e0e0e; }
+    .scrollbar-custom::-webkit-scrollbar-thumb { background: #2f4157; border-radius: 3px; }
 
-    .hero-image img {
-      width: 100%;
-      height: 190px;
-      object-fit: cover;
-      display: block;
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    .hero-pyramid h3 {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 0.4rem;
-      color: var(--color-primario);
-    }
-
-    .hero-pyramid p {
-      font-size: 0.8rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .hero-pyramid small {
-      font-size: 0.7rem;
-      color: rgba(58, 46, 37, 0.8);
-    }
-
-    .hero-geometry {
-      margin-top: 1rem;
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 0.75rem;
-      font-size: 0.75rem;
-    }
-
-    .pyramid-shape {
-      border-radius: 16px;
-      border: 1px solid rgba(140, 104, 73, 0.4);
-      background: linear-gradient(to top, #8c6849, #c4b6a6);
-      padding: 0.75rem;
-      color: #fdf9f4;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 120px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pyramid-shape::after {
-      content: "";
-      position: absolute;
-      inset: 40% -40%;
-      background: linear-gradient(to top, rgba(242,239,234,0.25), transparent);
-      mix-blend-mode: screen;
-    }
-
-    .pyramid-shape span {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      opacity: 0.9;
-    }
-
-    .mini-list {
-      border-radius: 16px;
-      background: rgba(242, 239, 234, 0.98);
-      padding: 0.8rem;
-      border: 1px dashed rgba(140, 104, 73, 0.3);
-    }
-
-    .mini-list p {
-      margin-bottom: 0.35rem;
-    }
-
-    .mini-list ul {
-      list-style: none;
-      font-size: 0.75rem;
-    }
-
-    .mini-list li::before {
-      content: "•";
-      margin-right: 0.35rem;
-      color: var(--color-primario);
-    }
-
-    /* Secciones generales */
-    main {
-      margin-top: 0.5rem;
-    }
-
-    section {
-      padding: 2rem 0 0;
-    }
-
-    .section-inner {
-      display: grid;
-      grid-template-columns: minmax(0, 2.3fr) minmax(260px, 1.5fr);
-      gap: 1.8rem;
-      align-items: flex-start;
-      padding: 1.75rem 1.5rem;
-      margin-bottom: 1.5rem;
-      border-radius: var(--radius-card);
-      background: var(--color-fondo-suave);
-      box-shadow: var(--shadow-suave);
-      border: 1px solid rgba(140, 104, 73, 0.08);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .section-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--color-primario);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .section-title {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 1.6rem;
-      color: #3b2a1c;
-    }
-
-    .section-pill {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-      border: 1px solid rgba(140, 104, 73, 0.25);
-      background: rgba(242, 239, 234, 0.8);
-      white-space: nowrap;
-    }
-
-    .section-body p {
-      font-size: 0.9rem;
-      margin-bottom: 0.65rem;
-    }
-
-    .key-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-      font-size: 0.82rem;
-    }
-
-    .chip-card {
-      border-radius: 14px;
-      padding: 0.55rem 0.7rem 0.6rem;
-      background: rgba(242, 239, 234, 0.98);
-      border: 1px solid rgba(140, 104, 73, 0.22);
-    }
-
-    .chip-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--color-primario);
-      margin-bottom: 0.2rem;
-    }
-
-    .chip-main {
-      font-size: 0.83rem;
-    }
-
-    /* Panel visual para imágenes / extras */
-    .section-aside {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .image-card {
-      border-radius: 18px;
-      padding: 0.85rem 0.9rem;
-      background: rgba(242, 239, 234, 0.96);
-      border: 1px dashed rgba(140, 104, 73, 0.35);
-      font-size: 0.8rem;
-    }
-
-    .image-tag {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: rgba(58, 46, 37, 0.8);
-      margin-bottom: 0.35rem;
-    }
-
-    .image-placeholder {
-      margin-top: 0.6rem;
-      border-radius: 14px;
-      border: 1px solid rgba(140, 104, 73, 0.35);
-      background: #e8ddd1;
-      height: 150px;
-      overflow: hidden;
-    }
-
-    .meta-note {
-      font-size: 0.72rem;
-      color: rgba(58, 46, 37, 0.85);
-    }
-
-    /* Línea del tiempo visual */
-    .timeline {
-      margin-top: 0.8rem;
-      padding-top: 0.5rem;
-      border-top: 1px solid rgba(140, 104, 73, 0.25);
-      display: grid;
-      gap: 0.75rem;
-      font-size: 0.8rem;
-    }
-
-    .timeline-row {
-      display: grid;
-      grid-template-columns: 82px minmax(0, 1fr);
-      gap: 0.7rem;
-      align-items: start;
-    }
-
-    .timeline-year {
-      font-weight: 600;
-      color: var(--color-primario);
-      font-size: 0.82rem;
-    }
-
-    .timeline-content {
-      border-radius: 12px;
-      padding: 0.5rem 0.7rem;
-      background: rgba(242, 239, 234, 0.9);
-      border: 1px solid rgba(140, 104, 73, 0.16);
-    }
-
-    /* Mapa minimalista */
-    .map-card {
-      border-radius: 18px;
-      padding: 0.9rem;
-      background: rgba(242, 239, 234, 0.96);
-      border: 1px solid rgba(140, 104, 73, 0.2);
-      font-size: 0.8rem;
-    }
-
-    .map-placeholder {
-      margin-top: 0.5rem;
-      height: 180px;
-      border-radius: 14px;
-      border: 1px dashed rgba(140, 104, 73, 0.4);
-      overflow: hidden;
-    }
-
-    /* Galería minimalista */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 0.6rem;
-      margin-top: 0.6rem;
-    }
-
-    .gallery-item {
-      border-radius: 14px;
-      height: 90px;
-      border: 1px solid rgba(140, 104, 73, 0.28);
-      overflow: hidden;
-    }
-
-    /* Imágenes dentro de contenedores */
-    .image-placeholder img,
-    .map-placeholder img,
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Animaciones */
-    .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Footer */
-    footer {
-      padding: 2rem 1.5rem 3rem;
-      border-top: 1px solid rgba(140, 104, 73, 0.16);
-      background: linear-gradient(to top, #e7ddd1, #f4eee7);
-      margin-top: 2rem;
-    }
-
-    .footer-inner {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: space-between;
-      font-size: 0.78rem;
-      color: rgba(58, 46, 37, 0.85);
-    }
-
-    /* Responsive */
-    @media (max-width: 880px) {
-      .hero-inner,
-      .section-inner {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      nav ul {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 2.2rem;
-      }
-
-      .section-inner {
-        padding: 1.35rem 1.1rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero-title {
-        font-size: 2.1rem;
-      }
-
-      .hero-card {
-        margin-top: 0.5rem;
-      }
-    }
+    .modal-overlay { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="nav">
-      <div class="brand">
-        <div class="brand-mark">𐌋</div>
-        <span>Xoltech · Teotihuacán</span>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="#intro" class="nav-link active">Introducción</a></li>
-          <li><a href="#urbano" class="nav-link">Urbanismo</a></li>
-          <li><a href="#cultura" class="nav-link">Cultura</a></li>
-          <li><a href="#arte" class="nav-link">Arte</a></li>
-          <li><a href="#economia" class="nav-link">Economía</a></li>
-          <li><a href="#ciencia" class="nav-link">Ciencia</a></li>
-          <li><a href="#legado" class="nav-link">Legado</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-inner reveal">
-      <div>
-        <div class="hero-tag">
-          <span>Ciudad de los Dioses</span> · Patrimonio de la Humanidad
-        </div>
-        <h1 class="hero-title">Teotihuacán, el corazón de la antigua Mesoamérica</h1>
-        <p class="hero-subtitle">
-          Un centro urbano planificado, lleno de simbolismo, ciencia y espiritualidad,
-          cuya influencia se extendió a lo largo de siglos y culturas.
-        </p>
-        <div class="hero-meta">
-          <div class="meta-pill">200 a.C. – 750 d.C.</div>
-          <div class="meta-pill">Altiplano Central · México</div>
-          <div class="meta-pill">Arquitectura · Religión · Comercio</div>
-        </div>
-      </div>
-
-      <aside class="hero-card">
-        <div class="hero-pyramid">
-          <div class="hero-image">
-            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Sun%20%2820064112414%29.jpg"
-                 alt="Piramide del Sol en Teotihuacán, vista panorámica">
-          </div>
-          <h3>Vista general</h3>
-          <p>
-            La Calzada de los Muertos articula templos, barrios y plazas,
-            en diálogo con el cielo y los volcanes del Valle de México.
-          </p>
-          <small>Fotografía de la Pirámide del Sol y parte del conjunto ceremonial.</small>
-
-          <div class="hero-geometry">
-            <div class="pyramid-shape">
-              <span>Plano idealizado</span>
-              <div>
-                <strong>Teotihuacán</strong><br />
-                Ejes principales orientados al cielo, plazas abiertas y pirámides monumentales.
-              </div>
-            </div>
-            <div class="mini-list">
-              <p><strong>Elementos visibles en la imagen:</strong></p>
-              <ul>
-                <li>Pirámide del Sol.</li>
-                <li>Plataformas y patios ceremoniales.</li>
-                <li>Valle y montañas del entorno.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <main class="container">
-
-    <!-- 1. Introducción -->
-    <section id="intro" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🌄 Introducción general</div>
-              <h2 class="section-title">Teotihuacán, “lugar donde los dioses fueron hechos”</h2>
-            </div>
-            <div class="section-pill">Contexto · Ubicación · Alcance</div>
-          </div>
-
-          <p>
-            Teotihuacán se localiza en el actual Estado de México, en el altiplano
-            central, en un valle rodeado por volcanes y tierras fértiles. Su
-            ubicación estratégica facilitó el comercio y el contacto con otras
-            regiones de Mesoamérica.
-          </p>
-          <p>
-            El nombre “Teotihuacán” proviene del náhuatl y suele traducirse como
-            <strong>“lugar donde los dioses fueron hechos”</strong> o “ciudad de los
-            dioses”. Aunque este nombre es posterior (mexica), refleja la
-            importancia sagrada que tuvo el sitio.
-          </p>
-          <p>
-            La ciudad floreció aproximadamente entre <strong>200 a.C. y 750 d.C.</strong>
-            y llegó a ser una de las urbes más grandes del mundo antiguo. Su
-            arquitectura monumental, su planeación urbana y su religiosidad
-            influyeron en culturas como la <strong>maya, mexica y zapoteca</strong>,
-            que retomaron elementos de sus estilos, símbolos y concepciones
-            cosmológicas.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Ubicación</div>
-              <div class="chip-main">Valle de Teotihuacán, Altiplano Central, Estado de México.</div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Horizonte Temporal</div>
-              <div class="chip-main">Desde aldeas tempranas hasta su auge entre 200-550 d.C.</div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Importancia</div>
-              <div class="chip-main">Centro político, económico y religioso de Mesoamérica.</div>
-            </div>
-          </div>
-
-          <div class="timeline">
-            <div class="timeline-row">
-              <div class="timeline-year">c. 200 a.C.</div>
-              <div class="timeline-content">
-                Formación de aldeas y comienzos de la urbanización en el valle.
-              </div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-year">200–550 d.C.</div>
-              <div class="timeline-content">
-                Apogeo de Teotihuacán: expansión, grandes pirámides y comercio intenso.
-              </div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-year">550–750 d.C.</div>
-              <div class="timeline-content">
-                Crisis, incendios y paulatino abandono de la ciudad.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="map-card">
-            <div class="image-tag">Mapa de ubicación</div>
-            <p>
-              Teotihuacán se ubica al noreste de la Ciudad de México, a unos 50 km.
-            </p>
-            <div class="map-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacanos.png"
-                   alt="Mapa de la ubicación geográfica de Teotihuacán y sitios asociados">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 2. Organización urbana y arquitectura -->
-    <section id="urbano" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🏛 Urbanismo y arquitectura</div>
-              <h2 class="section-title">Una ciudad planificada con precisión cósmica</h2>
-            </div>
-            <div class="section-pill">Calzada · Pirámides · Barrios</div>
-          </div>
-
-          <p>
-            Teotihuacán es ejemplo de <strong>urbanismo planificado</strong>. Sus calles
-            principales, plazas y conjuntos habitacionales se organizaron en torno a
-            ejes bien definidos, muchos con orientaciones astronómicas.
-          </p>
-          <p>
-            La <strong>Calzada de los Muertos</strong> funciona como eje principal,
-            conectando plazas, plataformas y templos. A lo largo de ella se
-            encuentran la <strong>Pirámide del Sol</strong>, la
-            <strong>Pirámide de la Luna</strong> y el
-            <strong>Templo de Quetzalcóatl</strong>, rodeados de conjuntos
-            residenciales y espacios ceremoniales.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Calzada de los Muertos</div>
-              <div class="chip-main">
-                Amplia avenida que articula el paisaje ritual y urbano de la ciudad.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Pirámide del Sol</div>
-              <div class="chip-main">
-                Una de las estructuras más grandes de Mesoamérica, relacionada con el
-                culto solar y con cuevas sagradas.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Pirámide de la Luna</div>
-              <div class="chip-main">
-                Cierra la calzada al norte; se relaciona con rituales y ofrendas
-                complejas.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Templo de Quetzalcóatl</div>
-              <div class="chip-main">
-                Famoso por sus relieves de serpientes emplumadas y elementos marinos.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Barrios como Tepantitla</div>
-              <div class="chip-main">
-                Conjuntos habitacionales con patios, murales y espacios de culto
-                doméstico.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Calzada de los Muertos</div>
-            <p>Vista panorámica del eje principal de la ciudad.</p>
-            <div class="image-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/AvenueoftheDeadTeotihuacan.jpg"
-                   alt="Panorama de la Calzada de los Muertos en Teotihuacán">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 3. Cultura, sociedad y religión -->
-    <section id="cultura" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🎭 Cultura, sociedad y religión</div>
-              <h2 class="section-title">Una sociedad compleja, guiada por los dioses</h2>
-            </div>
-            <div class="section-pill">Dioses · Rituales · Comerciantes</div>
-          </div>
-
-          <p>
-            La sociedad teotihuacana estaba estratificada: gobernantes, sacerdotes,
-            guerreros, artesanos, comerciantes y agricultores cumplían funciones
-            específicas. Los centros ceremoniales articulaban la vida política y
-            religiosa.
-          </p>
-          <p>
-            Entre sus deidades destacan <strong>Tláloc</strong> (lluvia y fertilidad),
-            <strong>Quetzalcóatl</strong> (serpiente emplumada, asociado al viento,
-            conocimiento y vida) y una <strong>Diosa de la Agricultura</strong> o de la
-            fertilidad, frecuentemente representada con agua, plantas y pájaros.
-          </p>
-          <p>
-            Las <strong>creencias cosmológicas</strong> integraban cielo, tierra e
-            inframundo. Los rituales incluían ofrendas, sacrificios, procesiones y
-            ceremonias que reforzaban la relación entre el orden cósmico y la vida
-            cotidiana.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Estructura social</div>
-              <div class="chip-main">
-                Autoridades religiosas y políticas, especialistas y amplia base de
-                campesinos y artesanos.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Dioses principales</div>
-              <div class="chip-main">Tláloc, Quetzalcóatl, deidades de la fertilidad y la agricultura.</div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Ritualidad</div>
-              <div class="chip-main">
-                Centros ceremoniales, ofrendas, fuego, agua, semillas y elementos
-                astronómicos.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Comercio</div>
-              <div class="chip-main">
-                Redes de intercambio que llevaban productos, ideas y símbolos a
-                regiones lejanas.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Diosa de Teotihuacán</div>
-            <p>
-              Representación de la llamada “Gran Diosa” asociada a la fertilidad y al agua.
-            </p>
-            <div class="image-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Great%20Goddess%20of%20Teotihuacan%20%28T%20Aleto%29.jpg"
-                   alt="Mural de la Gran Diosa de Teotihuacán">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 4. Arte y simbolismo -->
-    <section id="arte" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🖼 Arte y simbolismo</div>
-              <h2 class="section-title">Murales, cerámica y signos del cosmos</h2>
-            </div>
-            <div class="section-pill">Murales · Cerámica · Iconos</div>
-          </div>
-
-          <p>
-            El arte teotihuacano destaca por sus <strong>murales policromos</strong>,
-            esculturas y cerámica finamente trabajada. En lugares como
-            <strong>Tepantitla</strong> y <strong>Tetitla</strong> se conservan escenas
-            de deidades, paisajes acuáticos, animales y símbolos agrícolas.
-          </p>
-          <p>
-            La <strong>iconografía</strong> incluye serpientes emplumadas, máscaras,
-            flores, gotas de agua, caracoles y figuras geométricas. Estos motivos
-            expresan ideas sobre fertilidad, lluvia, guerra, poder y equilibrio
-            cósmico.
-          </p>
-          <p>
-            Las técnicas incluyen el uso de pigmentos minerales sobre enlucidos de
-            cal, así como cerámicas modeladas, pintadas y, en algunos casos,
-            moldeadas en serie.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Murales</div>
-              <div class="chip-main">
-                Composiciones complejas, con colores rojos, ocres, azules y verdes.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Escultura</div>
-              <div class="chip-main">
-                Máscaras, figuras de piedra y estelas con rasgos estilizados.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Cerámica</div>
-              <div class="chip-main">
-                Vasijas, incensarios, figurillas y recipientes rituales.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Galería de arte</div>
-            <p>Ejemplos de arte teotihuacano.</p>
-            <div class="gallery">
-              <div class="gallery-item">
-                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tepantitla-Mountain-of-Abundance%20mural.jpg"
-                     alt="Mural de Tepantitla conocido como Paraíso de Tláloc">
-              </div>
-              <div class="gallery-item">
-                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Great%20Goddess%20of%20Teotihuacan%20%28T%20Aleto%29.jpg"
-                     alt="Detalle de deidad en mural teotihuacano">
-              </div>
-              <div class="gallery-item">
-                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacancityplan.png"
-                     alt="Plano esquemático del centro ceremonial de Teotihuacán">
-              </div>
-              <div class="gallery-item">
-                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Sun%20%2820064112414%29.jpg"
-                     alt="Vista adicional de la Pirámide del Sol">
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 5. Economía y vida cotidiana -->
-    <section id="economia" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">📉 Economía y vida cotidiana</div>
-              <h2 class="section-title">Comercio, obsidiana y agricultura organizada</h2>
-            </div>
-            <div class="section-pill">Obsidiana · Agricultura · Talleres</div>
-          </div>
-
-          <p>
-            La economía teotihuacana se basaba en la <strong>agricultura</strong>,
-            el <strong>comercio</strong> y la producción especializada. Se cultivaba
-            maíz, frijol, calabaza y otros productos, aprovechando sistemas de riego
-            y técnicas de manejo del agua.
-          </p>
-          <p>
-            La ciudad controlaba importantes talleres de <strong>obsidiana</strong>,
-            piedra volcánica de gran valor para herramientas y armas. Sus productos
-            se distribuyeron por buena parte de Mesoamérica.
-          </p>
-          <p>
-            La vida cotidiana incluía trabajo en el campo, talleres artesanales,
-            intercambio en mercados y participación periódica en rituales y fiestas.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Comercio regional</div>
-              <div class="chip-main">
-                Intercambio de alimentos, textiles, cerámica, obsidiana y objetos de
-                lujo.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Agricultura</div>
-              <div class="chip-main">
-                Uso de riego, terrazas y campos organizados; en algunas zonas se
-                experimentó con sistemas tipo chinampa.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Talleres</div>
-              <div class="chip-main">
-                Especialistas en obsidiana, cerámica, textiles y objetos rituales.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Obsidiana y herramientas</div>
-            <p>Ejemplo de núcleos y herramientas de obsidiana trabajada.</p>
-            <div class="image-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aztec%20Obsidian%20Cores%20and%20Bone%20Flaking%20Tools%20%289755751804%29.jpg"
-                   alt="Herramientas y núcleos de obsidiana de Mesoamérica">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 6. Ciencia y tecnología -->
-    <section id="ciencia" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🏺 Ciencia y tecnología</div>
-              <h2 class="section-title">Astronomía, construcción y planeación avanzada</h2>
-            </div>
-            <div class="section-pill">Astros · Hidráulica · Planeación</div>
-          </div>
-
-          <p>
-            Teotihuacán muestra un profundo conocimiento de la
-            <strong>astronomía</strong> y del paisaje. Varias estructuras se alinean
-            con puntos clave del horizonte y fenómenos celestes, integrando ciencia y
-            religión.
-          </p>
-          <p>
-            Sus <strong>técnicas constructivas</strong> combinan piedra, adobe y
-            recubrimientos de cal. Las pirámides se levantaron en etapas, reforzando
-            estructuras anteriores.
-          </p>
-          <p>
-            La ciudad también desarrolló <strong>sistemas hidráulicos</strong> y
-            canales para conducir agua, así como una compleja
-            <strong>planeación urbana</strong> con cuadrículas, barrios y plazas
-            interconectadas.
-          </p>
-
-          <div class="key-grid">
-            <div class="chip-card">
-              <div class="chip-label">Observaciones astronómicas</div>
-              <div class="chip-main">
-                Orientaciones de avenidas y templos relacionadas con sol, estrellas y
-                ciclos agrícolas.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Técnicas constructivas</div>
-              <div class="chip-main">
-                Uso de taludes, tableros, recubrimientos y colores que reforzaban el
-                efecto visual.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Planeación urbana</div>
-              <div class="chip-main">
-                Ejes bien definidos, barrios especializados y control del espacio
-                público.
-              </div>
-            </div>
-            <div class="chip-card">
-              <div class="chip-label">Sistemas hidráulicos</div>
-              <div class="chip-main">
-                Canales, drenajes y control de escurrimientos pluviales.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Plano urbano</div>
-            <p>
-              Esquema del centro ceremonial y su orientación respecto a los puntos
-              cardinales.
-            </p>
-            <div class="image-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacancityplan.png"
-                   alt="Plano del centro ceremonial de Teotihuacán">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 7. Declive y legado -->
-    <section id="legado" class="reveal">
-      <div class="section-inner">
-        <div class="section-body">
-          <div class="section-header">
-            <div>
-              <div class="section-label">🌀 Declive y legado histórico</div>
-              <h2 class="section-title">De ciudad viva a mito mesoamericano</h2>
-            </div>
-            <div class="section-pill">Abandono · Redescubrimiento · Patrimonio</div>
-          </div>
-
-          <p>
-            El declive de Teotihuacán fue un proceso gradual. Existen teorías que
-            hablan de conflictos internos, crisis políticas, presiones externas y
-            problemas ambientales. Algunos sectores de la ciudad muestran rastros de
-            incendios intencionales.
-          </p>
-          <p>
-            A pesar de su abandono, Teotihuacán siguió viva en la memoria de
-            <strong>culturas posteriores</strong>, especialmente para los mexicas, que
-            la consideraban un lugar sagrado donde habían nacido los dioses.
-          </p>
-          <p>
-            En la época moderna, la zona fue explorada, excavada y finalmente
-            reconocida como <strong>Patrimonio de la Humanidad por la UNESCO</strong>.
-            Hoy es un sitio clave para comprender la historia de Mesoamérica.
-          </p>
-
-          <div class="timeline">
-            <div class="timeline-row">
-              <div class="timeline-year">c. 750 d.C.</div>
-              <div class="timeline-content">
-                Abandono mayoritario de la ciudad; continúan visitas y ocupaciones
-                parciales.
-              </div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-year">Época mexica</div>
-              <div class="timeline-content">
-                La ciudad es reinterpretada como escenario sagrado de la creación del
-                mundo.
-              </div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-year">S. XIX–XX</div>
-              <div class="timeline-content">
-                Exploraciones, excavaciones y consolidación de estructuras
-                monumentales.
-              </div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-year">UNESCO</div>
-              <div class="timeline-content">
-                Teotihuacán es reconocido como Patrimonio de la Humanidad, garantizando
-                su protección y difusión.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="section-aside">
-          <div class="image-card">
-            <div class="image-tag">Teotihuacán hoy</div>
-            <p>
-              Vista de la Pirámide de la Luna, el Cerro Gordo y la Calzada de los
-              Muertos.
-            </p>
-            <div class="image-placeholder">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Moon%2C%20Cerro%20Gordo%2C%20and%20the%20Avenue%20of%20the%20Dead%20%2820660408766%29.jpg"
-                   alt="Pirámide de la Luna, Cerro Gordo y Calzada de los Muertos">
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-      <div>
-      </div>
-      <div>
-        Diseñado por <strong>Xoltech</strong>.
-      </div>
-    </div>
-  </footer>
+  <div id="root"></div>
 
   <script>
-    // Animaciones de aparición (fade-in)
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
+    window.onerror = function (message, source, lineno, colno, error) {
+      const errorDiv = document.createElement('div');
+      errorDiv.style.position = 'fixed';
+      errorDiv.style.top = '0';
+      errorDiv.style.left = '0';
+      errorDiv.style.width = '100%';
+      errorDiv.style.backgroundColor = '#990000';
+      errorDiv.style.color = 'white';
+      errorDiv.style.padding = '20px';
+      errorDiv.style.zIndex = '9999';
+      errorDiv.style.fontFamily = 'monospace';
+      errorDiv.innerHTML = '<h3>Error Detectado:</h3><pre>' + message + '\n' + source + ':' + lineno + '</pre>';
+      document.body.appendChild(errorDiv);
+    };
+  </script>
 
-    document.querySelectorAll(".reveal").forEach((section) => {
-      observer.observe(section);
-    });
+  <script type="text/babel">
+    if (!window.React || !window.ReactDOM) throw new Error("React falló al cargar.");
+    if (!window.Chart) throw new Error("Chart.js falló al cargar.");
 
-    // Actualizar estado del menú según scroll
-    const sections = document.querySelectorAll("main section");
-    const navLinks = document.querySelectorAll(".nav-link");
+    const { useState, useEffect, useRef } = React;
 
-    const highlightNav = () => {
-      let currentId = "";
-      sections.forEach((sec) => {
-        const rect = sec.getBoundingClientRect();
-        if (rect.top <= 120 && rect.bottom >= 120) {
-          currentId = sec.id;
-        }
-      });
+    Chart.defaults.color = '#9ca3af';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+    Chart.defaults.font.family = "'Inter', sans-serif";
 
-      navLinks.forEach((link) => {
-        link.classList.toggle(
-          "active",
-          link.getAttribute("href") === "#" + currentId
-        );
-      });
+    const Icons = {
+      LayoutDashboard: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>,
+      Newspaper: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" /><path d="M18 14h-8" /><path d="M15 18h-5" /><path d="M10 6h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" /></svg>,
+      BarChart2: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="18" y1="20" y2="10" /><line x1="12" x2="12" y1="20" y2="4" /><line x1="6" x2="6" y1="20" y2="14" /></svg>,
+      Bookmark: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>,
+      Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>,
+      Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>,
+      ExternalLink: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></svg>,
+      X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>,
+      BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
     };
 
-    window.addEventListener("scroll", highlightNav);
+    const COMPANIES = {
+      'OpenAI': { color: '#10a37f' },
+      'Anthropic': { color: '#d97757' },
+      'Google': { color: '#4285f4' },
+      'Meta': { color: '#0668e1' },
+      'Mistral': { color: '#fcd34d' },
+      'xAI': { color: '#ffffff' },
+      'DeepSeek': { color: '#4e7aff' }
+    };
+
+    // ✅ NOTICIAS INICIALES (sin rutas locales)
+    // Si no pones image, se genera AUTOMÁTICA.
+    const INITIAL_NEWS = [
+      {
+        id: 101,
+        title: "OpenAI y SoftBank anuncian alianza estratégica para IA en salud",
+        summary: "Colaboración para aplicar modelos avanzados a herramientas médicas.",
+        content: "Se anunció una asociación para impulsar soluciones de IA en salud, con enfoque en diagnóstico y prevención.",
+        source: "OpenAI Blog",
+        date: "2026-01-08",
+        company: "OpenAI",
+        tags: ["Alianza", "Salud", "Modelos"],
+        model_group: "OpenAI",
+        image: "" ,
+        url: "https://openai.com/"
+      },
+      {
+        id: 102,
+        title: "Google integra Gemini en Gmail para una gestión inteligente",
+        summary: "Funciones que priorizan y resumen correos automáticamente.",
+        content: "Se despliegan funciones de IA en productividad para resumir hilos y organizar prioridades.",
+        source: "Google Blog",
+        date: "2026-01-09",
+        company: "Google",
+        tags: ["Gmail", "Productividad", "Gemini"],
+        model_group: "Google",
+        image: "",
+        url: "https://blog.google/"
+      },
+      {
+        id: 103,
+        title: "DeepSeek gana tracción con modelos de bajo costo",
+        summary: "Modelos accesibles y competitivos impulsan adopción.",
+        content: "Crecimiento por rendimiento/costo en entornos con presupuesto limitado.",
+        source: "Reporte",
+        date: "2026-01-10",
+        company: "DeepSeek",
+        tags: ["Mercado", "Open", "Costo"],
+        model_group: "DeepSeek",
+        image: "",
+        url: "https://www.deepseek.com/"
+      }
+    ];
+
+    const MODELS_DATA = [
+      { name: 'GPT-4o (Omni)', company: 'OpenAI', mmlu: 90.0, humanEval: 92, tokensSec: 120, context: 128000, price: 5, type: 'Propietario' },
+      { name: 'GPT-5', company: 'OpenAI', mmlu: 98.5, humanEval: 99, tokensSec: 40, context: 2000000, price: 30, type: 'Propietario' },
+      { name: 'Claude Sonnet', company: 'Anthropic', mmlu: 94.0, humanEval: 96, tokensSec: 80, context: 500000, price: 8, type: 'Propietario' },
+      { name: 'Gemini Pro', company: 'Google', mmlu: 95.0, humanEval: 95, tokensSec: 70, context: 5000000, price: 12, type: 'Propietario' },
+      { name: 'Llama', company: 'Meta', mmlu: 89.0, humanEval: 88, tokensSec: 150, context: 128000, price: 0, type: 'Abierto' },
+      { name: 'Mistral Large', company: 'Mistral', mmlu: 92.5, humanEval: 93, tokensSec: 50, context: 64000, price: 9, type: 'Propietario' },
+      { name: 'Grok', company: 'xAI', mmlu: 85.0, humanEval: 80, tokensSec: 300, context: 128000, price: 3, type: 'Propietario' },
+      { name: 'DeepSeek Coder', company: 'DeepSeek', mmlu: 88.0, humanEval: 98, tokensSec: 70, context: 128000, price: 2, type: 'Abierto' },
+    ];
+
+    // ✅ Arreglado: si la imagen es local (C:/...) se ignora y se genera una automática
+    const isHttpUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v);
+
+    const autoImage = (seed, title, tags=[]) => {
+      const style = "Minimalist distinctive abstract digital art, dark background, tech futuristic aesthetic, high contrast";
+      const prompt = `${style} representing: ${title} (${tags.join(', ')})`;
+      return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1200&height=630&nologo=true&seed=${seed}`;
+    };
+
+    const getNewsImage = (item) => {
+      // Si es URL https válida → úsala
+      if (isHttpUrl(item.image)) return item.image;
+
+      // Si viene vacía o es local → genera
+      return autoImage(item.id, item.title, item.tags || []);
+    };
+
+    // --- UI ---
+    const Sidebar = ({ activeTab, setActiveTab }) => (
+      <div className="w-64 h-screen fixed left-0 top-0 glass border-r border-[#577c8e]/20 flex flex-col p-6 z-20">
+        <div className="flex items-center gap-3 mb-10 text-accent">
+          {/* ✅ Logo con ruta relativa (sube assets/logo.png) */}
+          <img
+            src="./assets/logo.png"
+            alt="AI Monitor Logo"
+            className="w-10 h-10 object-contain brightness-110 rounded-full"
+            onError={(e)=>{ e.currentTarget.style.display='none'; }}
+          />
+          <h1 className="font-bold text-xl tracking-tight">AI Monitor</h1>
+        </div>
+
+        <nav className="flex-1 space-y-2">
+          {[
+            { id: 'dashboard', icon: Icons.LayoutDashboard, label: 'Panel' },
+            { id: 'news', icon: Icons.Newspaper, label: 'Noticias' },
+            { id: 'compare', icon: Icons.BarChart2, label: 'Comparar' },
+            { id: 'guide', icon: Icons.BookOpen, label: 'Guía' },
+            { id: 'favorites', icon: Icons.Bookmark, label: 'Favoritos' },
+            { id: 'settings', icon: Icons.Settings, label: 'Config' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                activeTab === item.id
+                  ? 'bg-primary/40 text-accent border border-white/5 shadow-lg'
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <item.icon />
+              <span className="font-medium">{item.label}</span>
+              {activeTab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />}
+            </button>
+          ))}
+        </nav>
+      </div>
+    );
+
+    const NewsModal = ({ item, onClose, toggleFavorite, isFavorite }) => {
+      if (!item) return null;
+      const displayImage = getNewsImage(item);
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay animate-fade-in" onClick={onClose}>
+          <div className="glass-card max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-8 relative flex flex-col gap-4 text-gray-200" onClick={e => e.stopPropagation()}>
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-white/10 rounded-full text-white z-10 transition">
+              <Icons.X />
+            </button>
+
+            <div className="w-full h-64 rounded-xl overflow-hidden mb-2 relative shrink-0">
+              <img src={displayImage} alt={item.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-transparent to-transparent opacity-80" />
+            </div>
+
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-xs font-mono py-1 px-2 rounded bg-white/5 text-gray-300 border border-white/5">{item.date}</span>
+              <span className="text-xs py-1 px-2 rounded border border-white/10 font-bold" style={{ color: COMPANIES[item.company]?.color || '#fff', background: `${COMPANIES[item.company]?.color || '#fff'}15` }}>
+                {item.company}
+              </span>
+            </div>
+
+            <h2 className="text-2xl font-bold text-white leading-tight">{item.title}</h2>
+
+            <div className="flex gap-2 flex-wrap mb-4">
+              {(item.tags||[]).map(tag => (
+                <span key={tag} className="text-[10px] uppercase tracking-wider text-gray-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded">{tag}</span>
+              ))}
+            </div>
+
+            <div className="space-y-4 text-gray-300 leading-relaxed text-sm md:text-base border-t border-white/5 pt-4">
+              {String(item.content||"").split('\n\n').map((para, idx) => <p key={idx}>{para}</p>)}
+            </div>
+
+            <div className="mt-6 flex justify-between items-center pt-4 border-t border-white/5">
+              <span className="text-sm text-gray-500">Fuente: {item.source}</span>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => toggleFavorite(item.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition ${isFavorite ? 'text-yellow-400 border-yellow-400/30' : 'text-gray-400'}`}
+                >
+                  <Icons.Bookmark />
+                  <span>{isFavorite ? 'Guardado' : 'Guardar'}</span>
+                </button>
+                <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-200 rounded-lg border border-blue-500/30 transition">
+                  <Icons.ExternalLink />
+                  <span>Ver Original</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const NewsCard = ({ item, isFavorite, toggleFavorite, onClick }) => {
+      const displayImage = getNewsImage(item);
+
+      return (
+        <div onClick={() => onClick(item)} className="glass-card rounded-xl p-0 overflow-hidden relative group animate-fade-in flex flex-col h-full hover:scale-[1.02] transition-all cursor-pointer">
+          <div className="h-40 w-full overflow-hidden relative">
+            <img src={displayImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a1f2e] opacity-90" />
+            <div className="absolute top-3 left-3 flex gap-2">
+              <span className="text-[10px] font-mono py-1 px-2 rounded bg-black/60 text-gray-300 backdrop-blur-sm border border-white/10">{item.date}</span>
+            </div>
+          </div>
+
+          <div className="p-5 flex flex-col flex-grow">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs py-1 px-2 rounded border border-white/10 font-bold" style={{ color: COMPANIES[item.company]?.color || '#fff', background: `${COMPANIES[item.company]?.color || '#fff'}15` }}>
+                {item.company}
+              </span>
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-100 mb-2 group-hover:text-blue-200 transition-colors">{item.title}</h3>
+            <p className="text-sm text-gray-400 mb-4 line-clamp-2 flex-grow">{item.summary}</p>
+
+            <div className="flex items-center justify-between mt-auto">
+              <div className="flex gap-2 flex-wrap">
+                {(item.tags||[]).map(tag => (
+                  <span key={tag} className="text-[10px] uppercase tracking-wider text-gray-500 bg-black/30 px-2 py-0.5 rounded">{tag}</span>
+                ))}
+              </div>
+              <div className="flex gap-3" onClick={e => e.stopPropagation()}>
+                <button onClick={() => toggleFavorite(item.id)} className={`p-2 rounded-full hover:bg-white/10 transition ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`}>
+                  <Icons.Bookmark />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const DashboardView = ({ news, models, onNewsClick, favorites, toggleFavorite }) => {
+      const topModel = models.reduce((prev, current) => (prev.mmlu > current.mmlu) ? prev : current);
+      const recentNews = news.slice(0, 3);
+
+      return (
+        <div className="space-y-8 animate-fade-in overflow-y-auto h-full pb-20 scrollbar-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 glass-card rounded-2xl p-8 relative overflow-hidden cursor-default hover:transform-none">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Estado de la IA</h2>
+                <p className="text-gray-400 mb-6 max-w-lg">Resumen rápido: novedades, modelos y comparativas en un solo lugar.</p>
+                <div className="flex gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">Líder MMLU</span>
+                    <span className="text-2xl font-mono text-green-400">{topModel.mmlu}%</span>
+                    <span className="text-xs text-gray-600">{topModel.name}</span>
+                  </div>
+                  <div className="w-px bg-white/10" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">Noticias</span>
+                    <span className="text-2xl font-mono text-blue-400">{news.length}</span>
+                  </div>
+                  <div className="w-px bg-white/10" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">Velocidad</span>
+                    <span className="text-2xl font-mono text-purple-400">⚡ Rápida</span>
+                    <span className="text-xs text-gray-600">UI fluida</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="glass-card rounded-2xl p-6 flex flex-col justify-center items-center text-center relative cursor-default hover:transform-none">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary/5 rounded-2xl" />
+              <h3 className="text-lg font-medium text-gray-300 mb-1">Modelo Destacado</h3>
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl shadow-purple-900/40 my-4 flex items-center justify-center text-2xl font-bold">
+                AI
+              </div>
+              <h4 className="text-xl font-bold text-white">{models[0]?.name || 'Modelo Destacado'}</h4>
+              <p className="text-sm text-gray-500 mt-2">Comparativa disponible</p>
+              <div className="mt-4 w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                <div className="bg-green-400 h-full w-[85%]"></div>
+              </div>
+              <span className="text-xs text-green-400 mt-1 self-end">Benchmark alto</span>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">Últimas Noticias</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentNews.map(item => (
+                <NewsCard
+                  key={item.id}
+                  item={item}
+                  onClick={onNewsClick}
+                  isFavorite={favorites.includes(item.id)}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const NewsView = ({ news, favorites, toggleFavorite, onNewsClick }) => {
+      const [search, setSearch] = useState("");
+      const [filterCompany, setFilterCompany] = useState("All");
+
+      const filteredNews = news.filter(item => {
+        const matchesSearch =
+          item.title.toLowerCase().includes(search.toLowerCase()) ||
+          item.summary.toLowerCase().includes(search.toLowerCase());
+        const matchesCompany = filterCompany === "All" || item.company === filterCompany;
+        return matchesSearch && matchesCompany;
+      });
+
+      return (
+        <div className="h-full flex flex-col gap-6 animate-fade-in">
+          <div className="glass p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div className="relative w-full md:w-96">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><Icons.Search /></span>
+              <input
+                type="text"
+                placeholder="Buscar noticias..."
+                className="w-full bg-black/20 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary transition"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-2 w-full md:w-auto overflow-x-auto scrollbar-hide py-2 md:py-0">
+              <button onClick={() => setFilterCompany('All')}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${
+                  filterCompany === 'All' ? 'bg-white text-black border-white' : 'bg-transparent text-gray-400 border-white/10'
+                }`}
+              >Todas</button>
+
+              {Object.keys(COMPANIES).map(company => (
+                <button key={company} onClick={() => setFilterCompany(company)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${
+                    filterCompany === company ? 'bg-white/10 text-white border-white/40' : 'bg-transparent text-gray-400 border-white/10'
+                  }`}
+                >{company}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pb-20 overflow-y-auto scrollbar-custom pr-2 h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filteredNews.map(item => (
+                <NewsCard
+                  key={item.id}
+                  item={item}
+                  onClick={onNewsClick}
+                  isFavorite={favorites.includes(item.id)}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const FavoritesView = ({ news, favorites, toggleFavorite, onNewsClick }) => {
+      const favNews = news.filter(n => favorites.includes(n.id));
+      return (
+        <div className="animate-fade-in">
+          <h2 className="text-2xl font-bold mb-6">Mis Favoritos</h2>
+          {favNews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {favNews.map(item => (
+                <NewsCard
+                  key={item.id}
+                  item={item}
+                  onClick={onNewsClick}
+                  isFavorite={true}
+                  toggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-500 glass rounded-xl">
+              <Icons.Bookmark />
+              <p className="mt-4">No tienes noticias guardadas aún.</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const GuideView = () => (
+      <div className="animate-fade-in pb-20 overflow-y-auto h-full scrollbar-custom">
+        <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-blue-200 to-white bg-clip-text text-transparent">Guía: ¿Qué modelo usar?</h2>
+        <div className="glass-card p-6 rounded-2xl hover:transform-none cursor-default">
+          <p className="text-gray-300">
+            Esta sección puede explicar en qué casos usar modelos rápidos, modelos “pro” y modelos open-source.
+            (Si me dices para qué es tu proyecto, te la dejo súper completa.)
+          </p>
+        </div>
+      </div>
+    );
+
+    const ComparisonView = () => (
+      <div className="animate-fade-in pb-20 overflow-y-auto h-full scrollbar-custom">
+        <h2 className="text-2xl font-bold mb-4">Comparar Modelos</h2>
+        <div className="glass-card p-6 rounded-2xl hover:transform-none cursor-default">
+          <p className="text-gray-400">Aquí puedes meter tu comparador con Chart.js (si quieres te integro radar y barras también).</p>
+        </div>
+      </div>
+    );
+
+    class ErrorBoundary extends React.Component {
+      constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+      static getDerivedStateFromError(error) { return { hasError: true, error }; }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div className="p-8 m-8 glass-card rounded-xl text-center">
+              <h2 className="text-2xl font-bold text-red-400 mb-4">¡Ups! Algo salió mal.</h2>
+              <div className="bg-black/40 p-4 rounded text-left overflow-auto max-h-64 border border-red-500/20">
+                <code className="text-red-200 font-mono text-sm">{String(this.state.error)}</code>
+              </div>
+              <button onClick={() => this.setState({ hasError: false, error: null })} className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition">
+                Intentar de nuevo
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    const App = () => {
+      const [activeTab, setActiveTab] = useState('dashboard');
+
+      const [news, setNews] = useState(() => {
+        const savedNews = localStorage.getItem('ai_monitor_news');
+        return savedNews ? JSON.parse(savedNews) : INITIAL_NEWS;
+      });
+
+      const [favorites, setFavorites] = useState(() => {
+        const saved = localStorage.getItem('ai_monitor_favs');
+        return saved ? JSON.parse(saved) : [];
+      });
+
+      const [selectedNews, setSelectedNews] = useState(null);
+
+      useEffect(() => {
+        localStorage.setItem('ai_monitor_news', JSON.stringify(news));
+      }, [news]);
+
+      useEffect(() => {
+        localStorage.setItem('ai_monitor_favs', JSON.stringify(favorites));
+      }, [favorites]);
+
+      const toggleFavorite = (id) =>
+        setFavorites(prev => prev.includes(id) ? prev.filter(fid => fid !== id) : [...prev, id]);
+
+      const renderContent = () => {
+        switch (activeTab) {
+          case 'dashboard': return <DashboardView news={news} models={MODELS_DATA} onNewsClick={setSelectedNews} favorites={favorites} toggleFavorite={toggleFavorite} />;
+          case 'news': return <NewsView news={news} favorites={favorites} toggleFavorite={toggleFavorite} onNewsClick={setSelectedNews} />;
+          case 'compare': return <ComparisonView />;
+          case 'guide': return <GuideView />;
+          case 'favorites': return <FavoritesView news={news} favorites={favorites} toggleFavorite={toggleFavorite} onNewsClick={setSelectedNews} />;
+          default: return null;
+        }
+      };
+
+      return (
+        <div className="flex h-screen w-full bg-[#0e0e0e] text-slate-200 selection:bg-secondary/30">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          <main className="flex-1 ml-64 p-8 h-screen overflow-hidden flex flex-col relative">
+            <header className="flex justify-between items-center mb-8 shrink-0">
+              <div>
+                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500 capitalize">
+                  {activeTab === 'compare' ? 'Comparar' : activeTab === 'news' ? 'Noticias' : activeTab === 'favorites' ? 'Favoritos' : activeTab === 'guide' ? 'Guía' : 'Panel'}
+                </h2>
+                <p className="text-xs text-gray-500 font-mono mt-1">AI Monitor • Demo</p>
+              </div>
+            </header>
+
+            <div className="flex-1 overflow-hidden relative">
+              <ErrorBoundary key={activeTab}>{renderContent()}</ErrorBoundary>
+            </div>
+
+            {selectedNews && (
+              <NewsModal
+                item={selectedNews}
+                onClose={() => setSelectedNews(null)}
+                isFavorite={favorites.includes(selectedNews.id)}
+                toggleFavorite={toggleFavorite}
+              />
+            )}
+
+            <div className="fixed top-[-20%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none z-[-1]" />
+            <div className="fixed bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none z-[-1]" />
+          </main>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
   </script>
 </body>
 </html>
-
