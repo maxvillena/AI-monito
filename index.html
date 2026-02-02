@@ -1,0 +1,1233 @@
+Conversación abierta. 1 mensaje no leído.
+
+Ir al contenido
+Cómo usar Correo de COLEGIO CRISTÓBAL COLÓN AC con lectores de pantalla
+Conversaciones
+ 
+Políticas de programa
+Tecnología de Google
+Última actividad de la cuenta: hace 1 hora
+Detalles
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Xoltech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tipografías modernas -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-primario: #8C6849;
+      --color-secundario: #C4B6A6;
+      --color-fondo: #F2EFEA;
+      --color-fondo-suave: #EDE7DF;
+      --color-texto: #3A2E25;
+      --color-acento: #B38867;
+      --radius-card: 18px;
+      --shadow-suave: 0 18px 40px rgba(0, 0, 0, 0.06);
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #f5eee6 0, #f7f3ee 35%, #f2efe9 80%);
+      color: var(--color-texto);
+      line-height: 1.6;
+    }
+
+    /* Layout general */
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(242, 239, 234, 0.98), rgba(242, 239, 234, 0.85));
+      border-bottom: 1px solid rgba(140, 104, 73, 0.08);
+    }
+
+    .nav {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: var(--color-primario);
+    }
+
+    .brand-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(140, 104, 73, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      background: radial-gradient(circle at 30% 0, #f2efe9 0, #d3c3b3 60%, #8c6849 100%);
+      box-shadow: 0 10px 20px rgba(140, 104, 73, 0.35);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--color-texto);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: all 0.25s ease-out;
+      white-space: nowrap;
+    }
+
+    nav a:hover {
+      border-color: rgba(140, 104, 73, 0.35);
+      background: rgba(237, 231, 223, 0.95);
+    }
+
+    nav a.active {
+      border-color: rgba(140, 104, 73, 0.9);
+      background: #8c6849;
+      color: #f7f2ec;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3rem 1.5rem 2.5rem;
+    }
+
+    .hero-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(280px, 1.5fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(140, 104, 73, 0.25);
+      background: rgba(242, 239, 234, 0.9);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-primario);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title {
+      font-family: "Cormorant Garamond", "Times New Roman", serif;
+      font-size: clamp(2.4rem, 3.4vw + 1.2rem, 3.6rem);
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      color: #3b2a1c;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      max-width: 32rem;
+      color: rgba(58, 46, 37, 0.9);
+      margin-bottom: 1.35rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .meta-pill {
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(196, 182, 166, 0.2);
+      border: 1px solid rgba(196, 182, 166, 0.6);
+    }
+
+    .hero-card {
+      border-radius: 26px;
+      padding: 1.3rem 1.4rem;
+      background: radial-gradient(circle at 20% 0, #f9f4ee 0, #e1d4c6 50%, #b08863 100%);
+      box-shadow: var(--shadow-suave);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(120deg, rgba(255,255,255,0.35) 0, transparent 40%, transparent 60%, rgba(255,255,255,0.35) 100%),
+        radial-gradient(circle at 20% -10%, rgba(255,255,255,0.5), transparent 60%);
+      opacity: 0.75;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .hero-pyramid {
+      position: relative;
+      border-radius: 20px;
+      padding: 1rem;
+      background: rgba(242, 239, 234, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .hero-image {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(140, 104, 73, 0.35);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-pyramid h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.4rem;
+      color: var(--color-primario);
+    }
+
+    .hero-pyramid p {
+      font-size: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-pyramid small {
+      font-size: 0.7rem;
+      color: rgba(58, 46, 37, 0.8);
+    }
+
+    .hero-geometry {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .pyramid-shape {
+      border-radius: 16px;
+      border: 1px solid rgba(140, 104, 73, 0.4);
+      background: linear-gradient(to top, #8c6849, #c4b6a6);
+      padding: 0.75rem;
+      color: #fdf9f4;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pyramid-shape::after {
+      content: "";
+      position: absolute;
+      inset: 40% -40%;
+      background: linear-gradient(to top, rgba(242,239,234,0.25), transparent);
+      mix-blend-mode: screen;
+    }
+
+    .pyramid-shape span {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      opacity: 0.9;
+    }
+
+    .mini-list {
+      border-radius: 16px;
+      background: rgba(242, 239, 234, 0.98);
+      padding: 0.8rem;
+      border: 1px dashed rgba(140, 104, 73, 0.3);
+    }
+
+    .mini-list p {
+      margin-bottom: 0.35rem;
+    }
+
+    .mini-list ul {
+      list-style: none;
+      font-size: 0.75rem;
+    }
+
+    .mini-list li::before {
+      content: "•";
+      margin-right: 0.35rem;
+      color: var(--color-primario);
+    }
+
+    /* Secciones generales */
+    main {
+      margin-top: 0.5rem;
+    }
+
+    section {
+      padding: 2rem 0 0;
+    }
+
+    .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(260px, 1.5fr);
+      gap: 1.8rem;
+      align-items: flex-start;
+      padding: 1.75rem 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-card);
+      background: var(--color-fondo-suave);
+      box-shadow: var(--shadow-suave);
+      border: 1px solid rgba(140, 104, 73, 0.08);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-primario);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .section-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.6rem;
+      color: #3b2a1c;
+    }
+
+    .section-pill {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(140, 104, 73, 0.25);
+      background: rgba(242, 239, 234, 0.8);
+      white-space: nowrap;
+    }
+
+    .section-body p {
+      font-size: 0.9rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .chip-card {
+      border-radius: 14px;
+      padding: 0.55rem 0.7rem 0.6rem;
+      background: rgba(242, 239, 234, 0.98);
+      border: 1px solid rgba(140, 104, 73, 0.22);
+    }
+
+    .chip-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-primario);
+      margin-bottom: 0.2rem;
+    }
+
+    .chip-main {
+      font-size: 0.83rem;
+    }
+
+    /* Panel visual para imágenes / extras */
+    .section-aside {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .image-card {
+      border-radius: 18px;
+      padding: 0.85rem 0.9rem;
+      background: rgba(242, 239, 234, 0.96);
+      border: 1px dashed rgba(140, 104, 73, 0.35);
+      font-size: 0.8rem;
+    }
+
+    .image-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(58, 46, 37, 0.8);
+      margin-bottom: 0.35rem;
+    }
+
+    .image-placeholder {
+      margin-top: 0.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(140, 104, 73, 0.35);
+      background: #e8ddd1;
+      height: 150px;
+      overflow: hidden;
+    }
+
+    .meta-note {
+      font-size: 0.72rem;
+      color: rgba(58, 46, 37, 0.85);
+    }
+
+    /* Línea del tiempo visual */
+    .timeline {
+      margin-top: 0.8rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(140, 104, 73, 0.25);
+      display: grid;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 0.7rem;
+      align-items: start;
+    }
+
+    .timeline-year {
+      font-weight: 600;
+      color: var(--color-primario);
+      font-size: 0.82rem;
+    }
+
+    .timeline-content {
+      border-radius: 12px;
+      padding: 0.5rem 0.7rem;
+      background: rgba(242, 239, 234, 0.9);
+      border: 1px solid rgba(140, 104, 73, 0.16);
+    }
+
+    /* Mapa minimalista */
+    .map-card {
+      border-radius: 18px;
+      padding: 0.9rem;
+      background: rgba(242, 239, 234, 0.96);
+      border: 1px solid rgba(140, 104, 73, 0.2);
+      font-size: 0.8rem;
+    }
+
+    .map-placeholder {
+      margin-top: 0.5rem;
+      height: 180px;
+      border-radius: 14px;
+      border: 1px dashed rgba(140, 104, 73, 0.4);
+      overflow: hidden;
+    }
+
+    /* Galería minimalista */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+
+    .gallery-item {
+      border-radius: 14px;
+      height: 90px;
+      border: 1px solid rgba(140, 104, 73, 0.28);
+      overflow: hidden;
+    }
+
+    /* Imágenes dentro de contenedores */
+    .image-placeholder img,
+    .map-placeholder img,
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Animaciones */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+      padding: 2rem 1.5rem 3rem;
+      border-top: 1px solid rgba(140, 104, 73, 0.16);
+      background: linear-gradient(to top, #e7ddd1, #f4eee7);
+      margin-top: 2rem;
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: rgba(58, 46, 37, 0.85);
+    }
+
+    /* Responsive */
+    @media (max-width: 880px) {
+      .hero-inner,
+      .section-inner {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      nav ul {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 2.2rem;
+      }
+
+      .section-inner {
+        padding: 1.35rem 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2.1rem;
+      }
+
+      .hero-card {
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-mark">𐌋</div>
+        <span>Xoltech · Teotihuacán</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#intro" class="nav-link active">Introducción</a></li>
+          <li><a href="#urbano" class="nav-link">Urbanismo</a></li>
+          <li><a href="#cultura" class="nav-link">Cultura</a></li>
+          <li><a href="#arte" class="nav-link">Arte</a></li>
+          <li><a href="#economia" class="nav-link">Economía</a></li>
+          <li><a href="#ciencia" class="nav-link">Ciencia</a></li>
+          <li><a href="#legado" class="nav-link">Legado</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner reveal">
+      <div>
+        <div class="hero-tag">
+          <span>Ciudad de los Dioses</span> · Patrimonio de la Humanidad
+        </div>
+        <h1 class="hero-title">Teotihuacán, el corazón de la antigua Mesoamérica</h1>
+        <p class="hero-subtitle">
+          Un centro urbano planificado, lleno de simbolismo, ciencia y espiritualidad,
+          cuya influencia se extendió a lo largo de siglos y culturas.
+        </p>
+        <div class="hero-meta">
+          <div class="meta-pill">200 a.C. – 750 d.C.</div>
+          <div class="meta-pill">Altiplano Central · México</div>
+          <div class="meta-pill">Arquitectura · Religión · Comercio</div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="hero-pyramid">
+          <div class="hero-image">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Sun%20%2820064112414%29.jpg"
+                 alt="Piramide del Sol en Teotihuacán, vista panorámica">
+          </div>
+          <h3>Vista general</h3>
+          <p>
+            La Calzada de los Muertos articula templos, barrios y plazas,
+            en diálogo con el cielo y los volcanes del Valle de México.
+          </p>
+          <small>Fotografía de la Pirámide del Sol y parte del conjunto ceremonial.</small>
+
+          <div class="hero-geometry">
+            <div class="pyramid-shape">
+              <span>Plano idealizado</span>
+              <div>
+                <strong>Teotihuacán</strong><br />
+                Ejes principales orientados al cielo, plazas abiertas y pirámides monumentales.
+              </div>
+            </div>
+            <div class="mini-list">
+              <p><strong>Elementos visibles en la imagen:</strong></p>
+              <ul>
+                <li>Pirámide del Sol.</li>
+                <li>Plataformas y patios ceremoniales.</li>
+                <li>Valle y montañas del entorno.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main class="container">
+
+    <!-- 1. Introducción -->
+    <section id="intro" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🌄 Introducción general</div>
+              <h2 class="section-title">Teotihuacán, “lugar donde los dioses fueron hechos”</h2>
+            </div>
+            <div class="section-pill">Contexto · Ubicación · Alcance</div>
+          </div>
+
+          <p>
+            Teotihuacán se localiza en el actual Estado de México, en el altiplano
+            central, en un valle rodeado por volcanes y tierras fértiles. Su
+            ubicación estratégica facilitó el comercio y el contacto con otras
+            regiones de Mesoamérica.
+          </p>
+          <p>
+            El nombre “Teotihuacán” proviene del náhuatl y suele traducirse como
+            <strong>“lugar donde los dioses fueron hechos”</strong> o “ciudad de los
+            dioses”. Aunque este nombre es posterior (mexica), refleja la
+            importancia sagrada que tuvo el sitio.
+          </p>
+          <p>
+            La ciudad floreció aproximadamente entre <strong>200 a.C. y 750 d.C.</strong>
+            y llegó a ser una de las urbes más grandes del mundo antiguo. Su
+            arquitectura monumental, su planeación urbana y su religiosidad
+            influyeron en culturas como la <strong>maya, mexica y zapoteca</strong>,
+            que retomaron elementos de sus estilos, símbolos y concepciones
+            cosmológicas.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Ubicación</div>
+              <div class="chip-main">Valle de Teotihuacán, Altiplano Central, Estado de México.</div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Horizonte Temporal</div>
+              <div class="chip-main">Desde aldeas tempranas hasta su auge entre 200-550 d.C.</div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Importancia</div>
+              <div class="chip-main">Centro político, económico y religioso de Mesoamérica.</div>
+            </div>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-row">
+              <div class="timeline-year">c. 200 a.C.</div>
+              <div class="timeline-content">
+                Formación de aldeas y comienzos de la urbanización en el valle.
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-year">200–550 d.C.</div>
+              <div class="timeline-content">
+                Apogeo de Teotihuacán: expansión, grandes pirámides y comercio intenso.
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-year">550–750 d.C.</div>
+              <div class="timeline-content">
+                Crisis, incendios y paulatino abandono de la ciudad.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="map-card">
+            <div class="image-tag">Mapa de ubicación</div>
+            <p>
+              Teotihuacán se ubica al noreste de la Ciudad de México, a unos 50 km.
+            </p>
+            <div class="map-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacanos.png"
+                   alt="Mapa de la ubicación geográfica de Teotihuacán y sitios asociados">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 2. Organización urbana y arquitectura -->
+    <section id="urbano" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🏛 Urbanismo y arquitectura</div>
+              <h2 class="section-title">Una ciudad planificada con precisión cósmica</h2>
+            </div>
+            <div class="section-pill">Calzada · Pirámides · Barrios</div>
+          </div>
+
+          <p>
+            Teotihuacán es ejemplo de <strong>urbanismo planificado</strong>. Sus calles
+            principales, plazas y conjuntos habitacionales se organizaron en torno a
+            ejes bien definidos, muchos con orientaciones astronómicas.
+          </p>
+          <p>
+            La <strong>Calzada de los Muertos</strong> funciona como eje principal,
+            conectando plazas, plataformas y templos. A lo largo de ella se
+            encuentran la <strong>Pirámide del Sol</strong>, la
+            <strong>Pirámide de la Luna</strong> y el
+            <strong>Templo de Quetzalcóatl</strong>, rodeados de conjuntos
+            residenciales y espacios ceremoniales.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Calzada de los Muertos</div>
+              <div class="chip-main">
+                Amplia avenida que articula el paisaje ritual y urbano de la ciudad.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Pirámide del Sol</div>
+              <div class="chip-main">
+                Una de las estructuras más grandes de Mesoamérica, relacionada con el
+                culto solar y con cuevas sagradas.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Pirámide de la Luna</div>
+              <div class="chip-main">
+                Cierra la calzada al norte; se relaciona con rituales y ofrendas
+                complejas.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Templo de Quetzalcóatl</div>
+              <div class="chip-main">
+                Famoso por sus relieves de serpientes emplumadas y elementos marinos.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Barrios como Tepantitla</div>
+              <div class="chip-main">
+                Conjuntos habitacionales con patios, murales y espacios de culto
+                doméstico.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Calzada de los Muertos</div>
+            <p>Vista panorámica del eje principal de la ciudad.</p>
+            <div class="image-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/AvenueoftheDeadTeotihuacan.jpg"
+                   alt="Panorama de la Calzada de los Muertos en Teotihuacán">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3. Cultura, sociedad y religión -->
+    <section id="cultura" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🎭 Cultura, sociedad y religión</div>
+              <h2 class="section-title">Una sociedad compleja, guiada por los dioses</h2>
+            </div>
+            <div class="section-pill">Dioses · Rituales · Comerciantes</div>
+          </div>
+
+          <p>
+            La sociedad teotihuacana estaba estratificada: gobernantes, sacerdotes,
+            guerreros, artesanos, comerciantes y agricultores cumplían funciones
+            específicas. Los centros ceremoniales articulaban la vida política y
+            religiosa.
+          </p>
+          <p>
+            Entre sus deidades destacan <strong>Tláloc</strong> (lluvia y fertilidad),
+            <strong>Quetzalcóatl</strong> (serpiente emplumada, asociado al viento,
+            conocimiento y vida) y una <strong>Diosa de la Agricultura</strong> o de la
+            fertilidad, frecuentemente representada con agua, plantas y pájaros.
+          </p>
+          <p>
+            Las <strong>creencias cosmológicas</strong> integraban cielo, tierra e
+            inframundo. Los rituales incluían ofrendas, sacrificios, procesiones y
+            ceremonias que reforzaban la relación entre el orden cósmico y la vida
+            cotidiana.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Estructura social</div>
+              <div class="chip-main">
+                Autoridades religiosas y políticas, especialistas y amplia base de
+                campesinos y artesanos.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Dioses principales</div>
+              <div class="chip-main">Tláloc, Quetzalcóatl, deidades de la fertilidad y la agricultura.</div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Ritualidad</div>
+              <div class="chip-main">
+                Centros ceremoniales, ofrendas, fuego, agua, semillas y elementos
+                astronómicos.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Comercio</div>
+              <div class="chip-main">
+                Redes de intercambio que llevaban productos, ideas y símbolos a
+                regiones lejanas.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Diosa de Teotihuacán</div>
+            <p>
+              Representación de la llamada “Gran Diosa” asociada a la fertilidad y al agua.
+            </p>
+            <div class="image-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Great%20Goddess%20of%20Teotihuacan%20%28T%20Aleto%29.jpg"
+                   alt="Mural de la Gran Diosa de Teotihuacán">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 4. Arte y simbolismo -->
+    <section id="arte" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🖼 Arte y simbolismo</div>
+              <h2 class="section-title">Murales, cerámica y signos del cosmos</h2>
+            </div>
+            <div class="section-pill">Murales · Cerámica · Iconos</div>
+          </div>
+
+          <p>
+            El arte teotihuacano destaca por sus <strong>murales policromos</strong>,
+            esculturas y cerámica finamente trabajada. En lugares como
+            <strong>Tepantitla</strong> y <strong>Tetitla</strong> se conservan escenas
+            de deidades, paisajes acuáticos, animales y símbolos agrícolas.
+          </p>
+          <p>
+            La <strong>iconografía</strong> incluye serpientes emplumadas, máscaras,
+            flores, gotas de agua, caracoles y figuras geométricas. Estos motivos
+            expresan ideas sobre fertilidad, lluvia, guerra, poder y equilibrio
+            cósmico.
+          </p>
+          <p>
+            Las técnicas incluyen el uso de pigmentos minerales sobre enlucidos de
+            cal, así como cerámicas modeladas, pintadas y, en algunos casos,
+            moldeadas en serie.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Murales</div>
+              <div class="chip-main">
+                Composiciones complejas, con colores rojos, ocres, azules y verdes.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Escultura</div>
+              <div class="chip-main">
+                Máscaras, figuras de piedra y estelas con rasgos estilizados.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Cerámica</div>
+              <div class="chip-main">
+                Vasijas, incensarios, figurillas y recipientes rituales.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Galería de arte</div>
+            <p>Ejemplos de arte teotihuacano.</p>
+            <div class="gallery">
+              <div class="gallery-item">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tepantitla-Mountain-of-Abundance%20mural.jpg"
+                     alt="Mural de Tepantitla conocido como Paraíso de Tláloc">
+              </div>
+              <div class="gallery-item">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Great%20Goddess%20of%20Teotihuacan%20%28T%20Aleto%29.jpg"
+                     alt="Detalle de deidad en mural teotihuacano">
+              </div>
+              <div class="gallery-item">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacancityplan.png"
+                     alt="Plano esquemático del centro ceremonial de Teotihuacán">
+              </div>
+              <div class="gallery-item">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Sun%20%2820064112414%29.jpg"
+                     alt="Vista adicional de la Pirámide del Sol">
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 5. Economía y vida cotidiana -->
+    <section id="economia" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">📉 Economía y vida cotidiana</div>
+              <h2 class="section-title">Comercio, obsidiana y agricultura organizada</h2>
+            </div>
+            <div class="section-pill">Obsidiana · Agricultura · Talleres</div>
+          </div>
+
+          <p>
+            La economía teotihuacana se basaba en la <strong>agricultura</strong>,
+            el <strong>comercio</strong> y la producción especializada. Se cultivaba
+            maíz, frijol, calabaza y otros productos, aprovechando sistemas de riego
+            y técnicas de manejo del agua.
+          </p>
+          <p>
+            La ciudad controlaba importantes talleres de <strong>obsidiana</strong>,
+            piedra volcánica de gran valor para herramientas y armas. Sus productos
+            se distribuyeron por buena parte de Mesoamérica.
+          </p>
+          <p>
+            La vida cotidiana incluía trabajo en el campo, talleres artesanales,
+            intercambio en mercados y participación periódica en rituales y fiestas.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Comercio regional</div>
+              <div class="chip-main">
+                Intercambio de alimentos, textiles, cerámica, obsidiana y objetos de
+                lujo.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Agricultura</div>
+              <div class="chip-main">
+                Uso de riego, terrazas y campos organizados; en algunas zonas se
+                experimentó con sistemas tipo chinampa.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Talleres</div>
+              <div class="chip-main">
+                Especialistas en obsidiana, cerámica, textiles y objetos rituales.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Obsidiana y herramientas</div>
+            <p>Ejemplo de núcleos y herramientas de obsidiana trabajada.</p>
+            <div class="image-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aztec%20Obsidian%20Cores%20and%20Bone%20Flaking%20Tools%20%289755751804%29.jpg"
+                   alt="Herramientas y núcleos de obsidiana de Mesoamérica">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 6. Ciencia y tecnología -->
+    <section id="ciencia" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🏺 Ciencia y tecnología</div>
+              <h2 class="section-title">Astronomía, construcción y planeación avanzada</h2>
+            </div>
+            <div class="section-pill">Astros · Hidráulica · Planeación</div>
+          </div>
+
+          <p>
+            Teotihuacán muestra un profundo conocimiento de la
+            <strong>astronomía</strong> y del paisaje. Varias estructuras se alinean
+            con puntos clave del horizonte y fenómenos celestes, integrando ciencia y
+            religión.
+          </p>
+          <p>
+            Sus <strong>técnicas constructivas</strong> combinan piedra, adobe y
+            recubrimientos de cal. Las pirámides se levantaron en etapas, reforzando
+            estructuras anteriores.
+          </p>
+          <p>
+            La ciudad también desarrolló <strong>sistemas hidráulicos</strong> y
+            canales para conducir agua, así como una compleja
+            <strong>planeación urbana</strong> con cuadrículas, barrios y plazas
+            interconectadas.
+          </p>
+
+          <div class="key-grid">
+            <div class="chip-card">
+              <div class="chip-label">Observaciones astronómicas</div>
+              <div class="chip-main">
+                Orientaciones de avenidas y templos relacionadas con sol, estrellas y
+                ciclos agrícolas.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Técnicas constructivas</div>
+              <div class="chip-main">
+                Uso de taludes, tableros, recubrimientos y colores que reforzaban el
+                efecto visual.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Planeación urbana</div>
+              <div class="chip-main">
+                Ejes bien definidos, barrios especializados y control del espacio
+                público.
+              </div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Sistemas hidráulicos</div>
+              <div class="chip-main">
+                Canales, drenajes y control de escurrimientos pluviales.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Plano urbano</div>
+            <p>
+              Esquema del centro ceremonial y su orientación respecto a los puntos
+              cardinales.
+            </p>
+            <div class="image-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacancityplan.png"
+                   alt="Plano del centro ceremonial de Teotihuacán">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 7. Declive y legado -->
+    <section id="legado" class="reveal">
+      <div class="section-inner">
+        <div class="section-body">
+          <div class="section-header">
+            <div>
+              <div class="section-label">🌀 Declive y legado histórico</div>
+              <h2 class="section-title">De ciudad viva a mito mesoamericano</h2>
+            </div>
+            <div class="section-pill">Abandono · Redescubrimiento · Patrimonio</div>
+          </div>
+
+          <p>
+            El declive de Teotihuacán fue un proceso gradual. Existen teorías que
+            hablan de conflictos internos, crisis políticas, presiones externas y
+            problemas ambientales. Algunos sectores de la ciudad muestran rastros de
+            incendios intencionales.
+          </p>
+          <p>
+            A pesar de su abandono, Teotihuacán siguió viva en la memoria de
+            <strong>culturas posteriores</strong>, especialmente para los mexicas, que
+            la consideraban un lugar sagrado donde habían nacido los dioses.
+          </p>
+          <p>
+            En la época moderna, la zona fue explorada, excavada y finalmente
+            reconocida como <strong>Patrimonio de la Humanidad por la UNESCO</strong>.
+            Hoy es un sitio clave para comprender la historia de Mesoamérica.
+          </p>
+
+          <div class="timeline">
+            <div class="timeline-row">
+              <div class="timeline-year">c. 750 d.C.</div>
+              <div class="timeline-content">
+                Abandono mayoritario de la ciudad; continúan visitas y ocupaciones
+                parciales.
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-year">Época mexica</div>
+              <div class="timeline-content">
+                La ciudad es reinterpretada como escenario sagrado de la creación del
+                mundo.
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-year">S. XIX–XX</div>
+              <div class="timeline-content">
+                Exploraciones, excavaciones y consolidación de estructuras
+                monumentales.
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-year">UNESCO</div>
+              <div class="timeline-content">
+                Teotihuacán es reconocido como Patrimonio de la Humanidad, garantizando
+                su protección y difusión.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="section-aside">
+          <div class="image-card">
+            <div class="image-tag">Teotihuacán hoy</div>
+            <p>
+              Vista de la Pirámide de la Luna, el Cerro Gordo y la Calzada de los
+              Muertos.
+            </p>
+            <div class="image-placeholder">
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Teotihuacan%2C%20Pyramid%20of%20the%20Moon%2C%20Cerro%20Gordo%2C%20and%20the%20Avenue%20of%20the%20Dead%20%2820660408766%29.jpg"
+                   alt="Pirámide de la Luna, Cerro Gordo y Calzada de los Muertos">
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+      </div>
+      <div>
+        Diseñado por <strong>Xoltech</strong>.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Animaciones de aparición (fade-in)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    document.querySelectorAll(".reveal").forEach((section) => {
+      observer.observe(section);
+    });
+
+    // Actualizar estado del menú según scroll
+    const sections = document.querySelectorAll("main section");
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    const highlightNav = () => {
+      let currentId = "";
+      sections.forEach((sec) => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom >= 120) {
+          currentId = sec.id;
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.toggle(
+          "active",
+          link.getAttribute("href") === "#" + currentId
+        );
+      });
+    };
+
+    window.addEventListener("scroll", highlightNav);
+  </script>
+</body>
+</html>
+htmlviewer.html.txt
+Mostrando htmlviewer.html.txt
